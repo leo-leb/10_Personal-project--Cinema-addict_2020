@@ -1,7 +1,7 @@
 # Проект «Киноман» [![Build status][travis-image]][travis-url]
 
 * Студент: [Леонид Лебедев](https://up.htmlacademy.ru/ecmascript/13/user/1416433).
-* Наставник: `Неизвестно`.
+* Наставник: [Евгений Фаллер](https://up.htmlacademy.ru/ecmascript/13/user/505933).
 
 ---
 
