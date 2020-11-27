@@ -20,8 +20,6 @@ const comments = new Array(COMMENTS_MOCK_COUNT).fill().map(generateComment);
 const movies = new Array(MOVIES_MOCK_COUNT).fill().map(generateMovie);
 const filters = generateFilter(movies);
 
-console.log(movies);
-
 // актуально для работы с моками
 movies.forEach((movie) => {
   movie[`id`] = movies.indexOf(movie).toString();
