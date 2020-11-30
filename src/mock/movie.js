@@ -37,9 +37,10 @@ const generateComment = () => {
   };
 };
 
-const generateMovie = () => {
+const generateMovie = (index) => {
   let createdYear = getRandomInteger(YEARS_START, YEARS_FINISH);
   return {
+    id: index,
     name: getRandomValue(moviesList),
     poster: `./images/posters/${getRandomValue(postersList)}`,
     descriptionShort: setSymbolsLimit(getRandomValuesAndPerformToString(descriptionTemplate.split(`. `), DESC_VOLUME_MAX, `.`) + `.`, DESC_LENGTH_MAX),
