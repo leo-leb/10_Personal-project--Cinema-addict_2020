@@ -1,3 +1,5 @@
+import {filterItemsTemplate} from "../viewing.js";
+
 const createFilterItemTemplate = (filter) => {
   const {name, count} = filter;
   if (name === `all`) {
@@ -8,8 +10,7 @@ const createFilterItemTemplate = (filter) => {
 };
 
 export const createMainFilter = (filterItems) => {
-  const filterItemsTemplate = filterItems.map((filter) => createFilterItemTemplate(filter)).join(``);
   return `<div class="main-navigation__items">
-  ${filterItemsTemplate}
+  ${filterItemsTemplate(filterItems, createFilterItemTemplate)}
   </div>`;
 };
