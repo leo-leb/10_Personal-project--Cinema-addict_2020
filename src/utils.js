@@ -1,3 +1,5 @@
+const ESC_KEYCODE = 27;
+
 const compareRate = (a, b) => {
   return b.rate - a.rate;
 };

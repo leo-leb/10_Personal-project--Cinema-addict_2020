@@ -4,6 +4,8 @@ import {getRightId} from "./mock/movies.js";
 import {render, RenderPosition} from "./utils.js";
 import {MOVIE_SORT_EXTRA_COUNT, siteMain, siteBody, showMoreButtonComponent, movies} from "./main.js";
 
+const ESC_KEYCODE = 27;
+
 const renderMovie = (place, source, index) => {
   const filmsCardComponent = new FilmsCard(source[index]);
   render(place, filmsCardComponent.getElement(), RenderPosition.BEFOREEND);
@@ -42,9 +44,18 @@ const onMovieCardClick = () => {
         filmsPopupComponent.getElement().remove();
         filmsPopupComponent.removeElement();
       };
+      const onEscPressInPopup = (evt) => {
+        if (evt.keyCode === ESC_KEYCODE) {
+          evt.preventDefault();
+          filmsPopupComponent.getElement().remove();
+          filmsPopupComponent.removeElement();
+          document.removeEventListener(`keydown`, onEscPressInPopup);
+        }
+      };
       const onCardShow = () => {
         render(siteBody, filmsPopupComponent.getElement(), RenderPosition.BEFOREEND);
         siteBody.addEventListener(`click`, onCardHide);
+        document.addEventListener(`keydown`, onEscPressInPopup);
       };
       element.addEventListener(`click`, onCardShow);
     });

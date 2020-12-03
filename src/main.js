@@ -4,6 +4,7 @@ import MainStatisticsView from "./view/main-statistics.js";
 import MainFiltersView from "./view/main-filter.js";
 import MainSortView from "./view/main-sort.js";
 import MainFilmsSctructureView from "./view/main-films.js";
+import NoMoviesView from "./view/no-movies.js";
 import ShowMoreButtonView from "./view/films-show-more.js";
 import FilmsStatisticView from "./view/films-statistic.js";
 import {generateMovie} from "./mock/movies.js";
@@ -44,7 +45,13 @@ render(siteMainNavigation, new MainStatisticsView().getElement(), RenderPosition
 render(siteMainNavigation, new MainFiltersView(filters).getElement(), RenderPosition.AFTERBEGIN);
 
 render(siteMain, new MainSortView().getElement(), RenderPosition.BEFOREEND);
-render(siteMain, new MainFilmsSctructureView().getElement(), RenderPosition.BEFOREEND);
+
+if (movies.length === 0) {
+  render(siteMain, new NoMoviesView().getElement(), RenderPosition.BEFOREEND);
+} else {
+  render(siteMain, new MainFilmsSctructureView().getElement(), RenderPosition.BEFOREEND);
+}
+
 render(footerStatistic, new FilmsStatisticView().getElement(), RenderPosition.BEFOREEND);
 
 const showMoreButtonComponent = new ShowMoreButtonView();
