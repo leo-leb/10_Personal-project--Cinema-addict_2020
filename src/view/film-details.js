@@ -1,10 +1,11 @@
+import {createElement} from "../utils.js";
 import {genresAdd} from "../viewing.js";
 
 const createGenresItem = (value) => {
   return (`<span class="film-details__genre">${value}</span>`);
 };
 
-export const createFilmPopup = (movie) => {
+const createFilmPopup = (movie) => {
   const {name, rate, release, genre, duration, poster, descriptionFull, comments, director, writers, actors} = movie;
 
   return `<section class="film-details">
@@ -103,3 +104,26 @@ export const createFilmPopup = (movie) => {
   </form>
   </section>`;
 };
+
+export default class FilmsPopup {
+  constructor(movie) {
+    this._movie = movie;
+    this._element = null;
+  }
+
+  getTemplate() {
+    return createFilmPopup(this._movie);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}

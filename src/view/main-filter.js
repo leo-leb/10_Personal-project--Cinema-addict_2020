@@ -1,3 +1,4 @@
+import {createElement} from "../utils.js";
 import {filterItemsTemplate} from "../viewing.js";
 
 const createFilterItemTemplate = (filter) => {
@@ -9,8 +10,31 @@ const createFilterItemTemplate = (filter) => {
   }
 };
 
-export const createMainFilter = (filterItems) => {
+const createMainFilters = (source) => {
   return `<div class="main-navigation__items">
-  ${filterItemsTemplate(filterItems, createFilterItemTemplate)}
+  ${filterItemsTemplate(source, createFilterItemTemplate)}
   </div>`;
 };
+
+export default class MainFilters {
+  constructor(filters) {
+    this._filters = filters;
+    this._element = null;
+  }
+
+  getTemplate() {
+    return createMainFilters(this._filters);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}

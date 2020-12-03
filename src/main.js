@@ -1,16 +1,16 @@
-import {createUserRankTemplate} from "./view/user-rank.js";
-import {createMainNavigation} from "./view/main-navigation.js";
-import {createMainFilter} from "./view/main-filter.js";
-import {createMainSort} from "./view/main-sort.js";
-import {createMainFilmsSctructure} from "./view/main-films.js";
-import {createShowMoreButton} from "./view/films-show-more.js";
-import {createFilmsStatistic} from "./view/films-statistic.js";
-import {createFilmPopup} from "./view/film-details.js";
-import {generateMovie, getRightId} from "./mock/movies.js";
+import UserRankView from "./view/user-rank.js";
+import MainNavigationView from "./view/main-navigation.js";
+import MainStatisticsView from "./view/main-statistics.js";
+import MainFiltersView from "./view/main-filter.js";
+import MainSortView from "./view/main-sort.js";
+import MainFilmsSctructureView from "./view/main-films.js";
+import ShowMoreButtonView from "./view/films-show-more.js";
+import FilmsStatisticView from "./view/films-statistic.js";
+import {generateMovie} from "./mock/movies.js";
 import {generateComment} from "./mock/comments.js";
 import {generateFilter} from "./mock/filters.js";
-import {compareRate, compareComments, render} from "./common.js";
-import {renderMovie, onMovieListShowMore, onCardHide} from "./movie.js";
+import {compareRate, compareComments, RenderPosition, render} from "./utils.js";
+import {renderMovie, onMovieListShowMore, onMovieCardClick} from "./movie.js";
 
 const MOVIE_SORT_COUNT = 5;
 const MOVIE_SORT_EXTRA_COUNT = 5;
@@ -24,29 +24,30 @@ const siteMain = siteBody.querySelector(`main`);
 const siteFooter = siteBody.querySelector(`footer`);
 const footerStatistic = siteFooter.querySelector(`.footer__statistics`);
 
-// создание массива моковых данных с фильмами
 let movies = [];
 for (let i = 0; i < MOVIES_MOCK_COUNT; i++) {
   movies.push(generateMovie(i));
 }
 
-// создание массива моковых данных с комментариями
 let comments = new Array(COMMENTS_MOCK_COUNT).fill().map(generateComment);
 
-// создание массива моковых данных с фильтрами
-const filters = generateFilter(movies);
+let filters = generateFilter(movies);
 
 // генерация элементов разметки
 
-render(siteHeader, createUserRankTemplate(), `beforeend`);
-render(siteMain, createMainNavigation(), `beforeend`);
+render(siteHeader, new UserRankView().getElement(), RenderPosition.BEFOREEND);
+render(siteMain, new MainNavigationView().getElement(), RenderPosition.BEFOREEND);
 
 const siteMainNavigation = siteMain.querySelector(`.main-navigation`);
-render(siteMainNavigation, createMainFilter(filters), `afterbegin`);
 
-render(siteMain, createMainSort(), `beforeend`);
-render(siteMain, createMainFilmsSctructure(), `beforeend`);
-render(footerStatistic, createFilmsStatistic(), `beforeend`);
+render(siteMainNavigation, new MainStatisticsView().getElement(), RenderPosition.BEFOREEND);
+render(siteMainNavigation, new MainFiltersView(filters).getElement(), RenderPosition.AFTERBEGIN);
+
+render(siteMain, new MainSortView().getElement(), RenderPosition.BEFOREEND);
+render(siteMain, new MainFilmsSctructureView().getElement(), RenderPosition.BEFOREEND);
+render(footerStatistic, new FilmsStatisticView().getElement(), RenderPosition.BEFOREEND);
+
+const showMoreButtonComponent = new ShowMoreButtonView();
 
 const filmsList = siteMain.querySelector(`.films`);
 [].forEach.call(filmsList.children, (element) => {
@@ -56,31 +57,28 @@ const filmsList = siteMain.querySelector(`.films`);
   let moviesCommented = movies.slice().sort(compareComments);
 
   if (title.textContent === `All movies. Upcoming`) {
-    renderMovie(mainFilmsContainer, movies, MOVIE_SORT_COUNT, 0);
-    render(element, createShowMoreButton(), `beforeend`);
+    for (let i = 0; i < MOVIE_SORT_COUNT; i++) {
+      renderMovie(mainFilmsContainer, movies, i);
+    }
+    render(element, showMoreButtonComponent.getElement(), RenderPosition.BEFOREEND);
   } else if (title.textContent === `Top rated`) {
-    renderMovie(mainFilmsContainer, moviesRated, MOVIE_EXTRA_COUNT, 0);
+    for (let i = 0; i < MOVIE_EXTRA_COUNT; i++) {
+      renderMovie(mainFilmsContainer, moviesRated, i);
+    }
   } else {
-    renderMovie(mainFilmsContainer, moviesCommented, MOVIE_EXTRA_COUNT, 0);
+    for (let i = 0; i < MOVIE_EXTRA_COUNT; i++) {
+      renderMovie(mainFilmsContainer, moviesCommented, i);
+    }
   }
 });
 
-const cards = siteMain.querySelectorAll(`.film-card`);
-cards.forEach((card) => {
-  const elements = card.querySelectorAll(`.film-card__title, .film-card__poster, .film-card__comments`);
-  elements.forEach((element) => {
-    const onCardShow = () => {
-      render(siteBody, createFilmPopup(getRightId(movies, +card.getAttribute(`data-id`))), `beforeend`);
-      siteBody.addEventListener(`click`, onCardHide);
-    };
-    element.addEventListener(`click`, onCardShow);
-  });
+const showMoreButton = siteMain.querySelector(`.films-list__show-more`);
+
+document.addEventListener(`DOMContentLoaded`, onMovieCardClick);
+
+showMoreButton.addEventListener(`click`, function () {
+  onMovieListShowMore();
+  onMovieCardClick();
 });
 
-const allMovies = filmsList.querySelector(`.films-list`);
-const mainFilmsContainer = allMovies.querySelector(`.films-list__container`);
-const showMoreButton = allMovies.querySelector(`.films-list__show-more`);
-
-showMoreButton.addEventListener(`click`, onMovieListShowMore);
-
-export {MOVIE_SORT_EXTRA_COUNT, movies, mainFilmsContainer, showMoreButton};
+export {MOVIE_SORT_EXTRA_COUNT, siteMain, siteBody, showMoreButtonComponent, movies, filters};
