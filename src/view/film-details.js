@@ -1,10 +1,13 @@
+import {createElement} from "../utils.js";
+import {genresAdd} from "../viewing.js";
+
 const createGenresItem = (value) => {
   return (`<span class="film-details__genre">${value}</span>`);
 };
 
-export const createFilmPopup = (movie) => {
+const createFilmPopup = (movie) => {
   const {name, rate, release, genre, duration, poster, descriptionFull, comments, director, writers, actors} = movie;
-  const genresAdd = genre.split(` `).map((value) => createGenresItem(value)).join(``);
+
   return `<section class="film-details">
   <form class="film-details__inner" action="" method="get">
     <div class="film-details__top-container">
@@ -53,7 +56,7 @@ export const createFilmPopup = (movie) => {
             </tr>
             <tr class="film-details__row">
               <td class="film-details__term">Genres</td>
-              <td class="film-details__cell">${genresAdd}</td>
+              <td class="film-details__cell">${genresAdd(genre, createGenresItem)}</td>
             </tr>
           </table>
           <p class="film-details__film-description">${descriptionFull}</p>
@@ -101,3 +104,26 @@ export const createFilmPopup = (movie) => {
   </form>
   </section>`;
 };
+
+export default class FilmsPopup {
+  constructor(movie) {
+    this._movie = movie;
+    this._element = null;
+  }
+
+  getTemplate() {
+    return createFilmPopup(this._movie);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}

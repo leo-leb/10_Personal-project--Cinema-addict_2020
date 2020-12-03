@@ -1,16 +1,16 @@
 import {createElement} from "../utils.js";
 
-const createFilmsStatistic = () => {
-  return `<p>130 291 movies inside</p>`;
+export const createMainStatisics = () => {
+  return `<a href="#stats" class="main-navigation__additional">Stats</a>`;
 };
 
-export default class FilmsStatistic {
+export default class MainStatistics {
   constructor() {
     this._element = null;
   }
 
   getTemplate() {
-    return createFilmsStatistic();
+    return createMainStatisics();
   }
 
   getElement() {
