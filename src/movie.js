@@ -42,6 +42,14 @@ const onMovieCardClick = () => {
       filmsPopupComponent.getElement().remove();
       filmsPopupComponent.removeElement();
     };
+    const onEscPressInPopup = (evt) => {
+      if (evt.keyCode === ESC_KEYCODE) {
+        evt.preventDefault();
+        filmsPopupComponent.getElement().remove();
+        filmsPopupComponent.removeElement();
+        document.removeEventListener(`keydown`, onEscPressInPopup);
+      }
+    };
     const onCardShow = (evt) => {
       const target = evt.target;
       switch (target.tagName) {
@@ -50,6 +58,7 @@ const onMovieCardClick = () => {
         case `A`:
           render(siteBody, filmsPopupComponent.getElement(), RenderPosition.BEFOREEND);
           siteBody.addEventListener(`click`, onCardHide);
+          document.addEventListener(`keydown`, onEscPressInPopup);
           break;
         default:
           break;
