@@ -88,4 +88,4 @@ showMoreButton.addEventListener(`click`, function () {
   onMovieCardClick();
 });
 
-export {MOVIE_SORT_EXTRA_COUNT, siteMain, siteBody, showMoreButtonComponent, movies, filters};
+export {MOVIE_SORT_EXTRA_COUNT, siteMain, siteBody, filmsList, showMoreButtonComponent, movies, filters};

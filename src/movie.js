@@ -2,7 +2,7 @@ import FilmsCard from "./view/films-card.js";
 import FilmsPopupView from "./view/film-details.js";
 import {getRightId} from "./mock/movies.js";
 import {render, RenderPosition} from "./utils.js";
-import {MOVIE_SORT_EXTRA_COUNT, siteMain, siteBody, showMoreButtonComponent, movies} from "./main.js";
+import {MOVIE_SORT_EXTRA_COUNT, siteMain, siteBody, filmsList, showMoreButtonComponent, movies} from "./main.js";
 
 const ESC_KEYCODE = 27;
 
@@ -32,33 +32,30 @@ const onMovieListShowMore = () => {
 const onMovieCardClick = () => {
   const cards = siteMain.querySelectorAll(`.film-card`);
   cards.forEach((card) => {
-    const elements = card.querySelectorAll(`.film-card__title, .film-card__poster, .film-card__comments`);
-    elements.forEach((element) => {
-      const movie = getRightId(movies, +card.getAttribute(`data-id`));
-      const filmsPopupComponent = new FilmsPopupView(movie);
-      const onCardHide = (evt) => {
-        const target = evt.target;
-        if (target.getAttribute(`class`) !== `film-details__close-btn`) {
-          return;
-        }
-        filmsPopupComponent.getElement().remove();
-        filmsPopupComponent.removeElement();
-      };
-      const onEscPressInPopup = (evt) => {
-        if (evt.keyCode === ESC_KEYCODE) {
-          evt.preventDefault();
-          filmsPopupComponent.getElement().remove();
-          filmsPopupComponent.removeElement();
-          document.removeEventListener(`keydown`, onEscPressInPopup);
-        }
-      };
-      const onCardShow = () => {
-        render(siteBody, filmsPopupComponent.getElement(), RenderPosition.BEFOREEND);
-        siteBody.addEventListener(`click`, onCardHide);
-        document.addEventListener(`keydown`, onEscPressInPopup);
-      };
-      element.addEventListener(`click`, onCardShow);
-    });
+    const movie = getRightId(movies, +card.getAttribute(`data-id`));
+    const filmsPopupComponent = new FilmsPopupView(movie);
+    const onCardHide = (evt) => {
+      const target = evt.target;
+      if (target.getAttribute(`class`) !== `film-details__close-btn`) {
+        return;
+      }
+      filmsPopupComponent.getElement().remove();
+      filmsPopupComponent.removeElement();
+    };
+    const onCardShow = (evt) => {
+      const target = evt.target;
+      switch (target.tagName) {
+        case `H3`:
+        case `IMG`:
+        case `A`:
+          render(siteBody, filmsPopupComponent.getElement(), RenderPosition.BEFOREEND);
+          siteBody.addEventListener(`click`, onCardHide);
+          break;
+        default:
+          break;
+      }
+    };
+    card.addEventListener(`click`, onCardShow);
   });
 };
 
