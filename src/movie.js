@@ -1,10 +1,8 @@
 import FilmsCard from "./view/films-card.js";
 import FilmsPopupView from "./view/film-details.js";
 import {getRightId} from "./mock/movies.js";
-import {render, RenderPosition} from "./utils.js";
+import {isEscEvent, render, RenderPosition} from "./utils.js";
 import {MOVIE_SORT_EXTRA_COUNT, siteMain, siteBody, filmsList, showMoreButtonComponent, movies} from "./main.js";
-
-const ESC_KEYCODE = 27;
 
 const renderMovie = (place, source, index) => {
   const filmsCardComponent = new FilmsCard(source[index]);
@@ -34,6 +32,14 @@ const onMovieCardClick = () => {
   cards.forEach((card) => {
     const movie = getRightId(movies, +card.getAttribute(`data-id`));
     const filmsPopupComponent = new FilmsPopupView(movie);
+
+    const escActionsInPopup = () => {
+      filmsPopupComponent.getElement().remove();
+      filmsPopupComponent.removeElement();
+      document.removeEventListener(`keydown`, onEscPressInPopup);
+    };
+    const onEscPressInPopup = (evt) => isEscEvent(evt, escActionsInPopup);
+
     const onCardHide = (evt) => {
       const target = evt.target;
       if (target.getAttribute(`class`) !== `film-details__close-btn`) {
@@ -42,14 +48,7 @@ const onMovieCardClick = () => {
       filmsPopupComponent.getElement().remove();
       filmsPopupComponent.removeElement();
     };
-    const onEscPressInPopup = (evt) => {
-      if (evt.keyCode === ESC_KEYCODE) {
-        evt.preventDefault();
-        filmsPopupComponent.getElement().remove();
-        filmsPopupComponent.removeElement();
-        document.removeEventListener(`keydown`, onEscPressInPopup);
-      }
-    };
+
     const onCardShow = (evt) => {
       const target = evt.target;
       switch (target.tagName) {
@@ -64,6 +63,7 @@ const onMovieCardClick = () => {
           break;
       }
     };
+
     card.addEventListener(`click`, onCardShow);
   });
 };
