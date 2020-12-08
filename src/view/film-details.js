@@ -1,25 +1,22 @@
-import {createElement} from "../utils.js";
 import {createFilmPopup} from "./film-details.templalte.js";
+import AbstractView from "./abstract.js";
 
-export default class FilmsPopup {
+export default class FilmsPopup extends AbstractView {
   constructor(movie) {
+    super();
     this._movie = movie;
-    this._element = null;
+    this._popupCloseHandler = this._popupCloseHandler.bind(this);
   }
 
   getTemplate() {
     return createFilmPopup(this._movie);
   }
-
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
+  _popupCloseHandler(evt) {
+    evt.preventDefault();
+    this._callback.popupClose();
   }
-
-  removeElement() {
-    this._element = null;
+  setPopupCloseHandler(callback) {
+    this._callback.popupClose = callback;
+    this.getElement().querySelector(`.film-details__close-btn`).addEventListener(`click`, this._popupCloseHandler);
   }
 }

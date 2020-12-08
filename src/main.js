@@ -10,8 +10,9 @@ import FilmsStatisticView from "./view/films-statistic.js";
 import {generateMovie} from "./mock/movies.js";
 import {generateComment} from "./mock/comments.js";
 import {generateFilter} from "./mock/filters.js";
-import {compareRate, compareComments, RenderPosition, render} from "./utils.js";
-import {renderMovie, onMovieListShowMore, onMovieCardClick} from "./movie.js";
+import {compareRate, compareComments} from "./utils/common.js";
+import {render, RenderPosition} from "./utils/render.js";
+import {renderMovie, onMovieListShowMore} from "./movie.js";
 
 const MOVIE_SORT_COUNT = 5;
 const MOVIE_SORT_EXTRA_COUNT = 5;
@@ -68,6 +69,7 @@ const filmsList = siteMain.querySelector(`.films`);
       renderMovie(mainFilmsContainer, movies, i);
     }
     render(element, showMoreButtonComponent.getElement(), RenderPosition.BEFOREEND);
+    showMoreButtonComponent.setClickHandler(() => onMovieListShowMore());
   } else if (title.textContent === `Top rated`) {
     for (let i = 0; i < MOVIE_EXTRA_COUNT; i++) {
       renderMovie(mainFilmsContainer, moviesRated, i);
@@ -77,15 +79,6 @@ const filmsList = siteMain.querySelector(`.films`);
       renderMovie(mainFilmsContainer, moviesCommented, i);
     }
   }
-});
-
-const showMoreButton = siteMain.querySelector(`.films-list__show-more`);
-
-document.addEventListener(`DOMContentLoaded`, onMovieCardClick);
-
-showMoreButton.addEventListener(`click`, function () {
-  onMovieListShowMore();
-  onMovieCardClick();
 });
 
 export {MOVIE_SORT_EXTRA_COUNT, siteMain, siteBody, filmsList, showMoreButtonComponent, movies, filters};

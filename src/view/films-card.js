@@ -1,25 +1,24 @@
-import {createElement} from "../utils.js";
 import {createFilmsCard} from "./films-card.template.js";
+import AbstractView from "./abstract.js";
 
-export default class FilmsCard {
+export default class FilmsCard extends AbstractView {
   constructor(movie) {
+    super();
     this._movie = movie;
-    this._element = null;
+    this._filmsCardOpenHandler = this._filmsCardOpenHandler.bind(this);
   }
 
   getTemplate() {
     return createFilmsCard(this._movie);
   }
-
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
+  _filmsCardOpenHandler(evt) {
+    evt.preventDefault();
+    this._callback.popupOpen();
   }
-
-  removeElement() {
-    this._element = null;
+  setFilmsCardOpenHandler(callback) {
+    this._callback.popupOpen = callback;
+    this.getElement().querySelector(`img`).addEventListener(`click`, this._filmsCardOpenHandler);
+    this.getElement().querySelector(`h3`).addEventListener(`click`, this._filmsCardOpenHandler);
+    this.getElement().querySelector(`a`).addEventListener(`click`, this._filmsCardOpenHandler);
   }
 }

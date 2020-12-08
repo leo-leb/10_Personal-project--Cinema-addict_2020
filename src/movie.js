@@ -1,13 +1,36 @@
 import FilmsCard from "./view/films-card.js";
 import FilmsPopupView from "./view/film-details.js";
 import {getRightId} from "./mock/movies.js";
-import {isEscEvent, render, RenderPosition} from "./utils.js";
-import {MOVIE_SORT_EXTRA_COUNT, siteMain, siteBody, filmsList, showMoreButtonComponent, movies} from "./main.js";
+import {isEscEvent} from "./utils/common.js";
+import {render, RenderPosition} from "./utils/render.js";
+import {MOVIE_SORT_EXTRA_COUNT, siteMain, siteBody, showMoreButtonComponent, movies} from "./main.js";
+
+const cardShow = (filmsCard) => {
+  const movie = getRightId(movies, +filmsCard.getElement().getAttribute(`data-id`));
+  const filmsPopupComponent = new FilmsPopupView(movie);
+
+  const escActionsInPopup = () => {
+    filmsPopupComponent.getElement().remove();
+    filmsPopupComponent.removeElement();
+    document.removeEventListener(`keydown`, onEscPressInPopup);
+  };
+  const onEscPressInPopup = (evt) => isEscEvent(evt, escActionsInPopup);
+
+  const cardHide = () => {
+    filmsPopupComponent.getElement().remove();
+    filmsPopupComponent.removeElement();
+  };
+
+  render(siteBody, filmsPopupComponent.getElement(), RenderPosition.BEFOREEND);
+  filmsPopupComponent.setPopupCloseHandler(() => cardHide());
+  document.addEventListener(`keydown`, onEscPressInPopup);
+};
 
 const renderMovie = (place, source, index) => {
   const filmsCardComponent = new FilmsCard(source[index]);
   render(place, filmsCardComponent.getElement(), RenderPosition.BEFOREEND);
   place.children[index].setAttribute(`data-id`, source[index].id);
+  filmsCardComponent.setFilmsCardOpenHandler(() => cardShow(filmsCardComponent));
 };
 
 const onMovieListShowMore = () => {
@@ -27,45 +50,4 @@ const onMovieListShowMore = () => {
   }
 };
 
-const onMovieCardClick = () => {
-  const cards = siteMain.querySelectorAll(`.film-card`);
-  cards.forEach((card) => {
-    const movie = getRightId(movies, +card.getAttribute(`data-id`));
-    const filmsPopupComponent = new FilmsPopupView(movie);
-
-    const escActionsInPopup = () => {
-      filmsPopupComponent.getElement().remove();
-      filmsPopupComponent.removeElement();
-      document.removeEventListener(`keydown`, onEscPressInPopup);
-    };
-    const onEscPressInPopup = (evt) => isEscEvent(evt, escActionsInPopup);
-
-    const onCardHide = (evt) => {
-      const target = evt.target;
-      if (target.getAttribute(`class`) !== `film-details__close-btn`) {
-        return;
-      }
-      filmsPopupComponent.getElement().remove();
-      filmsPopupComponent.removeElement();
-    };
-
-    const onCardShow = (evt) => {
-      const target = evt.target;
-      switch (target.tagName) {
-        case `H3`:
-        case `IMG`:
-        case `A`:
-          render(siteBody, filmsPopupComponent.getElement(), RenderPosition.BEFOREEND);
-          siteBody.addEventListener(`click`, onCardHide);
-          document.addEventListener(`keydown`, onEscPressInPopup);
-          break;
-        default:
-          break;
-      }
-    };
-
-    card.addEventListener(`click`, onCardShow);
-  });
-};
-
-export {renderMovie, onMovieListShowMore, onMovieCardClick};
+export {renderMovie, onMovieListShowMore};

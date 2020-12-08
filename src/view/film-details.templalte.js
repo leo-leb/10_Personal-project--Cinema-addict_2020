@@ -1,4 +1,4 @@
-import {genresAdd} from "../viewing.js";
+import {genresAdd} from "../utils/render.js";
 
 const createGenresItem = (value) => {
   return (`<span class="film-details__genre">${value}</span>`);

@@ -1,4 +1,4 @@
-import {filterItemsTemplate} from "../viewing.js";
+import {filterItemsTemplate} from "../utils/render.js";
 
 const createFilterItemTemplate = (filter) => {
   const {name, count} = filter;
