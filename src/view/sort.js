@@ -1,6 +1,6 @@
 import AbstractView from "./abstract.js";
 
-const createMainSort = () => {
+const createSort = () => {
   return `<ul class="sort">
     <li><a href="#" class="sort__button sort__button--active">Sort by default</a></li>
     <li><a href="#" class="sort__button">Sort by date</a></li>
@@ -8,8 +8,8 @@ const createMainSort = () => {
   </ul>`;
 };
 
-export default class MainSort extends AbstractView {
+export default class Sort extends AbstractView {
   getTemplate() {
-    return createMainSort();
+    return createSort();
   }
 }

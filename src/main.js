@@ -1,12 +1,10 @@
 import UserRankView from "./view/user-rank.js";
-import MainNavigationView from "./view/main-navigation.js";
-import MainStatisticsView from "./view/main-statistics.js";
-import MainFiltersView from "./view/main-filter.js";
-import MainSortView from "./view/main-sort.js";
-import MainFilmsSctructureView from "./view/main-films.js";
+import NavigationView from "./view/navigation.js";
+import SortView from "./view/sort.js";
+import MoviesContainerView from "./view/movies-container.js";
 import NoMoviesView from "./view/no-movies.js";
-import ShowMoreButtonView from "./view/films-show-more.js";
-import FilmsStatisticView from "./view/films-statistic.js";
+import ShowMoreButtonView from "./view/show-more-movies.js";
+import StatisticView from "./view/statistic.js";
 import {generateMovie} from "./mock/movies.js";
 import {generateComment} from "./mock/comments.js";
 import {generateFilter} from "./mock/filters.js";
@@ -38,27 +36,21 @@ let filters = generateFilter(movies);
 // генерация элементов разметки
 
 render(siteHeader, new UserRankView().getElement(), RenderPosition.BEFOREEND);
-render(siteMain, new MainNavigationView().getElement(), RenderPosition.BEFOREEND);
-
-const siteMainNavigation = siteMain.querySelector(`.main-navigation`);
-
-render(siteMainNavigation, new MainStatisticsView().getElement(), RenderPosition.BEFOREEND);
-render(siteMainNavigation, new MainFiltersView(filters).getElement(), RenderPosition.AFTERBEGIN);
-
-render(siteMain, new MainSortView().getElement(), RenderPosition.BEFOREEND);
+render(siteMain, new NavigationView(filters).getElement(), RenderPosition.BEFOREEND);
+render(siteMain, new SortView().getElement(), RenderPosition.BEFOREEND);
 
 if (movies.length === 0) {
   render(siteMain, new NoMoviesView().getElement(), RenderPosition.BEFOREEND);
 } else {
-  render(siteMain, new MainFilmsSctructureView().getElement(), RenderPosition.BEFOREEND);
+  render(siteMain, new MoviesContainerView().getElement(), RenderPosition.BEFOREEND);
 }
 
-render(footerStatistic, new FilmsStatisticView().getElement(), RenderPosition.BEFOREEND);
+render(footerStatistic, new StatisticView().getElement(), RenderPosition.BEFOREEND);
 
 const showMoreButtonComponent = new ShowMoreButtonView();
 
 const filmsList = siteMain.querySelector(`.films`);
-[].forEach.call(filmsList.children, (element) => {
+Array.from(filmsList.children).forEach((element) => {
   const title = element.querySelector(`h2`);
   const mainFilmsContainer = element.querySelector(`.films-list__container`);
   let moviesRated = movies.slice().sort(compareRate);
@@ -66,17 +58,17 @@ const filmsList = siteMain.querySelector(`.films`);
 
   if (title.textContent === `All movies. Upcoming`) {
     for (let i = 0; i < MOVIE_SORT_COUNT; i++) {
-      renderMovie(mainFilmsContainer, movies, i);
+      renderMovie(mainFilmsContainer, movies[i]);
     }
     render(element, showMoreButtonComponent.getElement(), RenderPosition.BEFOREEND);
     showMoreButtonComponent.setClickHandler(() => onMovieListShowMore());
   } else if (title.textContent === `Top rated`) {
     for (let i = 0; i < MOVIE_EXTRA_COUNT; i++) {
-      renderMovie(mainFilmsContainer, moviesRated, i);
+      renderMovie(mainFilmsContainer, moviesRated[i]);
     }
   } else {
     for (let i = 0; i < MOVIE_EXTRA_COUNT; i++) {
-      renderMovie(mainFilmsContainer, moviesCommented, i);
+      renderMovie(mainFilmsContainer, moviesCommented[i]);
     }
   }
 });

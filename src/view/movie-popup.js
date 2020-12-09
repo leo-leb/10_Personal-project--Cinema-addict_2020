@@ -1,7 +1,7 @@
-import {createFilmPopup} from "./film-details.templalte.js";
+import {createMoviePopup} from "./movie-popup.templalte.js";
 import AbstractView from "./abstract.js";
 
-export default class FilmsPopup extends AbstractView {
+export default class MoviePopup extends AbstractView {
   constructor(movie) {
     super();
     this._movie = movie;
@@ -9,7 +9,7 @@ export default class FilmsPopup extends AbstractView {
   }
 
   getTemplate() {
-    return createFilmPopup(this._movie);
+    return createMoviePopup(this._movie);
   }
   _popupCloseHandler(evt) {
     evt.preventDefault();

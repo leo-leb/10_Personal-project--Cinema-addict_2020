@@ -4,7 +4,7 @@ const createGenresItem = (value) => {
   return (`<span class="film-details__genre">${value}</span>`);
 };
 
-export const createFilmPopup = (movie) => {
+export const createMoviePopup = (movie) => {
   const {name, rate, release, genre, duration, poster, descriptionFull, comments, director, writers, actors} = movie;
 
   return `<section class="film-details">
