@@ -1,4 +1,4 @@
-import {filterItemsTemplate} from "../utils/render.js";
+import {filterItemsTemplate} from "../../utils/render.js";
 
 const createFiltersItem = (filter) => {
   const {name, count} = filter;

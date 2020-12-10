@@ -1,5 +1,5 @@
 import {createNavigation} from "./navigation.template.js";
-import AbstractView from "./abstract.js";
+import AbstractView from "../abstract.js";
 
 export default class Navigation extends AbstractView {
   constructor(filters) {

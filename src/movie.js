@@ -1,5 +1,5 @@
-import MovieCardView from "./view/movie-card.js";
-import MoviePopupView from "./view/movie-popup.js";
+import MovieCardView from "./view/movie-card/movie-card.js";
+import MoviePopupView from "./view/movie-popup/movie-popup.js";
 import {getRightId} from "./mock/movies.js";
 import {isEscEvent} from "./utils/common.js";
 import {render, RenderPosition} from "./utils/render.js";

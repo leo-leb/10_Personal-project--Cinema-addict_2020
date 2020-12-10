@@ -1,5 +1,5 @@
 import {createMoviePopup} from "./movie-popup.templalte.js";
-import AbstractView from "./abstract.js";
+import AbstractView from "../abstract.js";
 
 export default class MoviePopup extends AbstractView {
   constructor(movie) {
