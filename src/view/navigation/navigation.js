@@ -10,4 +10,5 @@ export default class Navigation extends AbstractView {
   getTemplate() {
     return createNavigation(this._filters);
   }
+  // _navigationUpdateHandler(evt)
 }

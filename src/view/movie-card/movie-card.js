@@ -6,6 +6,7 @@ export default class MovieCard extends AbstractView {
     super();
     this._movie = movie;
     this._movieCardOpenHandler = this._movieCardOpenHandler.bind(this);
+    this._movieCardChangeDataHandler = this._movieCardChangeDataHandler.bind(this);
   }
 
   getTemplate() {
@@ -24,8 +25,23 @@ export default class MovieCard extends AbstractView {
         break;
     }
   }
+  _movieCardChangeDataHandler(evt) {
+    evt.preventDefault();
+    const target = evt.target;
+    switch (target.tagName) {
+      case `BUTTON`:
+        this._callback.changeData(target);
+        break;
+      default:
+        break;
+    }
+  }
   setMovieCardOpenHandler(callback) {
     this._callback.popupOpen = callback;
     this.getElement().addEventListener(`click`, this._movieCardOpenHandler);
+  }
+  setMovieCardChangeDataHandler(callback) {
+    this._callback.changeData = callback;
+    this.getElement().addEventListener(`click`, this._movieCardChangeDataHandler);
   }
 }

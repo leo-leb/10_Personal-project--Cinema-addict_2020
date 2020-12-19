@@ -12,6 +12,10 @@ export default class ShowMoreButton extends AbstractView {
   getTemplate() {
     return createShowMoreButton();
   }
+  delete() {
+    this.getElement().remove();
+    this.removeElement();
+  }
   _clickHandler(evt) {
     evt.preventDefault();
     this._callback.click();
