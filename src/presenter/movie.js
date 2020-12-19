@@ -1,141 +1,163 @@
 import MovieCardView from "../view/movie-card/movie-card.js";
 import MoviePopupView from "../view/movie-popup/movie-popup.js";
-import MoviesList from "./movies-list.js";
-import NavigationView from "../view/navigation/navigation.js";
-import Navigation from "./navigation.js";
+import MoviesListPresenter from "./movies-list.js";
+import NavigationPresenter from "./navigation.js";
 import {getRightId} from "../mock/movies.js";
 import {isEscEvent} from "../utils/common.js";
 import {compareRate, compareComments} from "../utils/common.js";
-// import {siteBody, navigation, filters} from "../main.js";
-import {siteBody, filters} from "../main.js";
-import {remove, render, RenderPosition} from "../utils/render.js";
-
-const siteMain = document.querySelector(`main`);
+import {siteBody, navigation, movies, filters} from "../main.js";
+import {remove, render, replace, RenderPosition} from "../utils/render.js";
 
 export default class Movie {
-  constructor(movies) {
-    this._movieList = movies;
+  constructor(moviesListContainer, changeData) {
+    this._moviesListContainer = moviesListContainer;
+    this._changeData = changeData;
+    this._movies = movies;
 
-    this._filtersList = filters;
+    this._movieComponent = null;
+    this._moviePopupComponent = null;
+
+    this._openMoviePopupHandler = this._openMoviePopupHandler.bind(this);
+    this._closePopupInClickHandler = this._closePopupInClickHandler.bind(this);
+    this._closePopupInEscHandler = this._closePopupInEscHandler.bind(this);
+    this._changeMovieCardDataHandler = this._changeMovieCardDataHandler.bind(this);
+    this._changeMoviePopupDataHandler = this._changeMoviePopupDataHandler.bind(this);
   }
 
-  _renderMovie(place, movie) {
-    const movieList = new MoviesList(siteMain);
-    const movieCardComponent = new MovieCardView(movie);
-    render(place, movieCardComponent.getElement(), RenderPosition.BEFOREEND);
-    movieCardComponent.getElement().setAttribute(`data-id`, movie.id);
+  init(movie) {
+    this._movie = movie;
 
-    const cardShow = () => {
-      const chosenMovie = getRightId(this._movieList, +movieCardComponent.getElement().getAttribute(`data-id`));
-      const moviePopupComponent = new MoviePopupView(chosenMovie);
+    const prevMovieComponent = this._movieComponent;
+    const prevMoviePopupComponent = this._moviePopupComponent;
 
-      moviePopupComponent.getElement().setAttribute(`data-id`, movie.id);
+    this._movieComponent = new MovieCardView(movie);
+    this._moviePopupComponent = new MoviePopupView(movie);
+    this._MoviesListPresenter = new MoviesListPresenter(this._movies);
 
-      // const escActionsInPopup = () => {
-      //   moviePopupComponent.getElement().remove();
-      //   moviePopupComponent.removeElement();
-      //   document.removeEventListener(`keydown`, onEscPressInPopup);
-      // };
-      // const onEscPressInPopup = (evt) => isEscEvent(evt, escActionsInPopup);
+    this._movieComponent.setMovieCardOpenHandler(() => this._openMoviePopupHandler());
 
-      const cardHide = () => {
-        moviePopupComponent.getElement().remove();
-        moviePopupComponent.removeElement();
-      };
+    this._movieComponent.setMovieCardChangeDataHandler((evt) => this._changeMovieCardDataHandler(evt));
+    this._moviePopupComponent.setPopupChangeDataHandler((evt) => this._changeMoviePopupDataHandler(evt));
 
-      const randomCard = siteBody.querySelector(`.film-details`);
+    if (prevMovieComponent === null) {
+      render(this._moviesListContainer, this._movieComponent, RenderPosition.BEFOREEND);
+      this._movieComponent.getElement().setAttribute(`data-id`, this._movie.id);
+      return;
+    }
 
-      if (randomCard) {
-        randomCard.remove();
-        render(siteBody, moviePopupComponent.getElement(), RenderPosition.BEFOREEND);
-      } else {
-        render(siteBody, moviePopupComponent.getElement(), RenderPosition.BEFOREEND);
-      }
+    replace(this._movieComponent, prevMovieComponent);
+    replace(this._moviePopupComponent, prevMoviePopupComponent);
 
-      const cardChangeDataInPopup = (evt) => {
-        const chosenMovie = getRightId(this._movieList, +movieCardComponent.getElement().getAttribute(`data-id`));
-      };
-
-      moviePopupComponent.setPopupCloseHandler(() => cardHide());
-      document.addEventListener(`keydown`, onEscPressInPopup);
-    };
-
-    const cardChangeData = (evt) => {
-      const navigation = new Navigation(siteMain, filters);
-      // const chosenMovie = getRightId(this._movieList, +movieCardComponent.getElement().getAttribute(`data-id`));
-      const chosenMovie = this._movieList[0];
-      console.log(chosenMovie);
-      console.log(chosenMovie.isWatchList);
-      console.log(evt.textContent);
-      // switch (evt.textContent) {
-      //   case `Add to watchlist`:
-      //     let A = !chosenMovie.isWatchList;
-      //     chosenMovie.isWatchList = A;
-      //     break;
-      //   case `Mark as watched`:
-      //     let B = !chosenMovie.isWatched;
-      //     chosenMovie.isWatched = B;
-      //     break;
-      //   case `Mark as favorite`:
-      //     let C = !chosenMovie.isFavorite;
-      //     chosenMovie.isFavorite = C;
-      //     break;
-      //   default:
-      //     break;
-      // }
-      console.log(this._movieList);
-      console.log(this._movieList[0].isWatchList);
-      // this._movieList[0].isWatchList = !this._movieList[0].isWatchList;
-      movieList._updateMoviesList(this._movieList); // !!!!!!!!!!!
-      // console.log(this._movieList);
-      navigation._updateNavigationHandler(this._movieList);
-    };
-
-    movieCardComponent.setMovieCardOpenHandler(() => cardShow());
-    movieCardComponent.setMovieCardChangeDataHandler((evt) => cardChangeData(evt));
-    // movieCardComponent.setMovieCardChangeDataHandler((evt) => {
-    //   cardChangeData(evt);
-    //   console.log(this._movieList);
-    //   navigation._updateNavigationHandler(this._movieList);
-    // });
+    remove(prevMovieComponent);
+    remove(prevMoviePopupComponent);
   }
 
-  _renderGeneralMovies(from, to) {
-    const filmsListGeneral = siteMain.querySelector(`.films`).children[0];
-    const moviesContainer = filmsListGeneral.querySelector(`.films-list__container`);
-    this._movieList
-      .slice(from, to)
-      .forEach((movie) => this._renderMovie(moviesContainer, movie));
+  _openMoviePopupHandler() {
+    const existingPopup = siteBody.querySelector(`.film-details`);
+
+    if (existingPopup) {
+      existingPopup.remove();
+      render(siteBody, this._moviePopupComponent, RenderPosition.BEFOREEND);
+    } else {
+      render(siteBody, this._moviePopupComponent, RenderPosition.BEFOREEND);
+    }
+
+    this._moviePopupComponent.setPopupCloseHandler(() => this._closePopupInClickHandler());
+    document.addEventListener(`keydown`, this._closePopupInEscHandler);
   }
 
-  _renderMostRatedMovies(from, to) {
-    const filmsListMostRated = siteMain.querySelector(`.films`).children[1];
-    const moviesContainer = filmsListMostRated.querySelector(`.films-list__container`);
-    this._movieList
-      .slice()
-      .sort(compareRate)
-      .slice(from, to)
-      .forEach((movie) => this._renderMovie(moviesContainer, movie));
+  _closePopupInClickHandler() {
+    this._moviePopupComponent.delete();
   }
 
-  _renderMostCommentedMovies(from, to) {
-    const filmsListMostCommented = siteMain.querySelector(`.films`).children[2];
-    const moviesContainer = filmsListMostCommented.querySelector(`.films-list__container`);
-    this._movieList
-      .slice()
-      .sort(compareComments)
-      .slice(from, to)
-      .forEach((movie) => this._renderMovie(moviesContainer, movie));
+  _changeMovieCardDataHandler(evt) {
+    switch (evt.textContent) {
+      case `Add to watchlist`:
+        this._changeData(
+            Object.assign(
+                {},
+                this._movie,
+                {
+                  isWatchList: !this._movie.isWatchList
+                }
+            )
+        );
+        break;
+      case `Mark as watched`:
+        this._changeData(
+            Object.assign(
+                {},
+                this._movie,
+                {
+                  isWatched: !this._movie.isWatched
+                }
+            )
+        );
+        break;
+      case `Mark as favorite`:
+        this._changeData(
+            Object.assign(
+                {},
+                this._movie,
+                {
+                  isFavorite: !this._movie.isFavorite
+                }
+            )
+        );
+        break;
+      default:
+        break;
+    }
   }
 
-  _clearMoviesContainer() {
-    const moviesCards = siteMain.querySelectorAll(`.film-card`);
-    moviesCards.forEach((card) => {
-      card.remove();
+  _changeMoviePopupDataHandler(evt) {
+    switch (evt.textContent) {
+      case `Add to watchlist`:
+        this._changeData(
+            Object.assign(
+                {},
+                this._movie,
+                {
+                  isWatchList: !this._movie.isWatchList
+                }
+            )
+        );
+        break;
+      case `Already watched`:
+        this._changeData(
+            Object.assign(
+                {},
+                this._movie,
+                {
+                  isWatched: !this._movie.isWatched
+                }
+            )
+        );
+        break;
+      case `Add to favorites`:
+        this._changeData(
+            Object.assign(
+                {},
+                this._movie,
+                {
+                  isFavorite: !this._movie.isFavorite
+                }
+            )
+        );
+        break;
+      default:
+        break;
+    }
+  }
+
+  _closePopupInEscHandler(evt) {
+    isEscEvent(evt, () => {
+      this._moviePopupComponent.delete();
+      document.removeEventListener(`keydown`, this._escKeyDownHandler);
     });
   }
 
-  // _handleAddToWatchList() {
-  //   const buttonWatch = movieCardComponent.querySelector(`.film-card__controls-item--add-to-watchlist`);
-  // }
+  _destroy() {
+    remove(this._movieComponent);
+  }
 }

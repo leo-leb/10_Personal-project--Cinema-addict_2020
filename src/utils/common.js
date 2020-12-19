@@ -1,6 +1,11 @@
 const ESC_KEYCODE = 27;
 const ENTER_KEYCODE = 13;
 
+/**
+ * Выполнение функции по нажатию на Escape.
+ * @param {evt} evt - Событие.
+ * @param {function} action - Действие при True.
+ */
 const isEscEvent = (evt, action) => {
   if (evt.keyCode === ESC_KEYCODE) {
     evt.preventDefault();
@@ -8,6 +13,11 @@ const isEscEvent = (evt, action) => {
   }
 };
 
+/**
+ * Выполнение функции по нажатию на Enter.
+ * @param {evt} evt - Событие.
+ * @param {function} action - Действие при True.
+ */
 const isEnterEvent = (evt, action) => {
   if (evt.keyCode === ENTER_KEYCODE) {
     evt.preventDefault();
@@ -15,10 +25,22 @@ const isEnterEvent = (evt, action) => {
   }
 };
 
+/**
+ * Сравнивает элементы массива фильмов по рейтингу.
+ * @param {object} a - Текущий элемент массива.
+ * @param {object} b - Следующий элемент массива.
+ * @return {result}
+ */
 const compareRate = (a, b) => {
   return b.rate - a.rate;
 };
 
+/**
+ * Сравнивает элементы массива фильмов по количеству комментариев.
+ * @param {object} a - Текущий элемент массива.
+ * @param {object} b - Следующий элемент массива.
+ * @return {result}
+ */
 const compareComments = (a, b) => {
   return b.comments - a.comments;
 };

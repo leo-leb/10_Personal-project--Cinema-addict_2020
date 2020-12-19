@@ -1,119 +1,115 @@
 import MovieListContainerView from "../view/movie-list-container/movie-list-container.js";
 import NoMoviesView from "../view/no-movies.js";
 import ShowMoreButtonView from "../view/show-more-movies.js";
-import Movie from "./movie.js";
-import {remove, render, RenderPosition} from "../utils/render.js";
-import {getRightId} from "../mock/movies.js";
+import MoviePresenter from "./movie.js";
+import {render, RenderPosition, getRightMoviesContainer, remove} from "../utils/render.js";
+import {compareRate, compareComments, updateItem} from "../utils/common.js";
 
-const MOVIE_SORT_COUNT = 5;
-const MOVIE_SORT_EXTRA_COUNT = 5;
-const MOVIE_EXTRA_COUNT = 2;
+const GENERAL_MOVIES_COUNT = 5;
+const GENERAL_MOVIES_EXTRA_COUNT = 5;
+const EXTRA_MOVIES_COUNT = 2;
 
-let updateCount = 0;
-
-const siteMain = document.querySelector(`main`);
+const ALL_MOVIES_NAME = `All movies. Upcoming`;
+const MOST_RATED_MOVIES_NAME = `Top rated`;
+const MOST_COMMENTED_MOVIES_NAME = `Most commented`;
 
 export default class MoviesList {
-  constructor(moviesSection) {
-    this._moviesSection = moviesSection;
+  constructor(moviesContainer) {
+    this._moviesContainer = moviesContainer;
+    this._moviePresenter = {};
+
+    this._renderedGeneralMoviesCount = GENERAL_MOVIES_COUNT;
+    this._renderedExtraMoviesCount = EXTRA_MOVIES_COUNT;
+    this._renderedExtraGeneralMoviesCount = GENERAL_MOVIES_EXTRA_COUNT;
 
     this._movieListContainerComponent = new MovieListContainerView();
     this._noMoviesComponent = new NoMoviesView();
-
     this._showMoreButtonComponent = new ShowMoreButtonView();
+
     this._handleShowMoreButtonClick = this._handleShowMoreButtonClick.bind(this);
+    this._handleMoviesChange = this._handleMoviesChange.bind(this);
   }
 
-  init(moviesList) {
-    this._moviesList = moviesList.slice();
-    render(siteMain, this._movieListContainerComponent.getElement(), RenderPosition.BEFOREEND);
-    this._renderMoviesList(this._moviesList);
-  }
+  init(movies) {
+    this._movies = movies.slice();
+    this._mostRatedMovies = movies.slice().sort(compareRate);
+    this._mostCommentedMovies = movies.slice().sort(compareComments);
 
-  _renderMoviesListContent(list) {
-    const movie = new Movie(list);
-    movie._renderGeneralMovies(0, MOVIE_SORT_COUNT);
-    if (updateCount < 1) {
-      this._renderShowMoreButton(list);
-    }
-    movie._renderMostRatedMovies(0, MOVIE_EXTRA_COUNT);
-    movie._renderMostCommentedMovies(0, MOVIE_EXTRA_COUNT);
-    updateCount += 1;
-  }
-
-  _renderMoviesListContentExtra(list, count) {
-    const movie = new Movie(list);
-    movie._renderGeneralMovies(0, count);
-    if (updateCount < 1) {
-      this._renderShowMoreButton(list);
-    }
-    movie._renderMostRatedMovies(0, MOVIE_EXTRA_COUNT);
-    movie._renderMostCommentedMovies(0, MOVIE_EXTRA_COUNT);
-    updateCount += 1;
-  }
-
-  _renderMoviesList(list) {
-    if (list.length === 0) {
-      this._renderNoMovies();
-      return;
-    }
-    this._renderMoviesListContent(list);
-  }
-
-  _renderMoviesListExtra(list, count) {
-    if (list.length === 0) {
-      this._renderNoMovies();
-      return;
-    }
-    this._renderMoviesListContentExtra(list, count);
+    render(this._moviesContainer, this._movieListContainerComponent, RenderPosition.BEFOREEND);
+    this._renderMoviesList();
   }
 
   _renderNoMovies() {
-    render(siteMain, this._noMoviesComponent.getElement(), RenderPosition.BEFOREEND);
+    render(this._moviesContainer, this._noMoviesComponent, RenderPosition.BEFOREEND);
   }
 
-  _handleShowMoreButtonClick(list) {
-    const movie = new Movie(list);
-    const mainFilmsContainer = siteMain.querySelector(`.films-list__container`);
+  _renderShowMoreButton() {
+    const generalMovieList = getRightMoviesContainer(ALL_MOVIES_NAME);
+    const generalMoviesVolume = generalMovieList.querySelector(`.films-list__container`).children.length;
 
-    let actualMovieStorageSize = mainFilmsContainer.children.length;
-    let extraCount = actualMovieStorageSize + MOVIE_SORT_EXTRA_COUNT;
+    if (generalMoviesVolume < this._movies.length) {
+      render(generalMovieList, this._showMoreButtonComponent, RenderPosition.BEFOREEND);
+    }
 
-    if (this._moviesList.length - actualMovieStorageSize <= 5) {
-      movie._renderGeneralMovies(actualMovieStorageSize, extraCount);
-      this._showMoreButtonComponent.getElement().remove();
-      this._showMoreButtonComponent.removeElement();
+    this._showMoreButtonComponent.setClickHandler(this._handleShowMoreButtonClick);
+  }
+
+  _handleShowMoreButtonClick() {
+    const generalContainer = getRightMoviesContainer(ALL_MOVIES_NAME).querySelector(`.films-list__container`);
+    const generalMoviesVolume = generalContainer.children.length;
+    let generalMoviesExtraCount = generalMoviesVolume + this._renderedExtraGeneralMoviesCount;
+
+    if (this._movies.length - generalMoviesVolume <= 5) {
+      this._renderMovies(this._movies, generalContainer, generalMoviesVolume, generalMoviesExtraCount);
+      this._showMoreButtonComponent.delete();
       return;
     }
 
-    movie._renderGeneralMovies(actualMovieStorageSize, extraCount);
+    this._renderMovies(this._movies, generalContainer, generalMoviesVolume, generalMoviesExtraCount);
   }
 
-  _renderShowMoreButton(list) {
-    const mainFilmsList = siteMain.querySelector(`.films-list`);
-
-    render(mainFilmsList, this._showMoreButtonComponent.getElement(), RenderPosition.BEFOREEND);
-
-    const currentFunc = () => this._handleShowMoreButtonClick(list);
-
-    this._showMoreButtonComponent.setClickHandler(currentFunc);
+  _renderMovie(place, movie) {
+    const moviePresenter = new MoviePresenter(place, this._handleMoviesChange);
+    moviePresenter.init(movie);
+    this._moviePresenter[movie.id] = moviePresenter;
   }
 
-  destroy(list) {
-    const movie = new Movie(list);
-    movie._clearMoviesContainer();
+  _handleMoviesChange(updatedMovie) {
+    this._movies = updateItem(this._movies, updatedMovie);
+    this._moviePresenter[updatedMovie.id].init(updatedMovie);
   }
 
-  _updateMoviesList(list) {
-    const filmsListGeneral = siteMain.querySelector(`.films`).children[0];
-    const moviesContainer = filmsListGeneral.querySelector(`.films-list__container`);
-    let count = moviesContainer.children.length;
-    if (count > 5) {
-      this.destroy(list);
-      this._renderMoviesListExtra(list, count);
-    } else {
-      this.destroy(list);
-      this._renderMoviesList(list);
+  _renderMovies(source, place, from, to) {
+    source
+      .slice(from, to)
+      .forEach((movie) => this._renderMovie(place, movie));
+  }
+
+  _renderAllMovies(toForGeneral) {
+    const generalContainer = getRightMoviesContainer(ALL_MOVIES_NAME).querySelector(`.films-list__container`);
+    const mostRatedContainer = getRightMoviesContainer(MOST_RATED_MOVIES_NAME).querySelector(`.films-list__container`);
+    const mostCommentedContainer = getRightMoviesContainer(MOST_COMMENTED_MOVIES_NAME).querySelector(`.films-list__container`);
+
+    this._renderMovies(this._movies, generalContainer, 0, toForGeneral);
+    this._renderMovies(this._mostRatedMovies, mostRatedContainer, 0, this._renderedExtraMoviesCount);
+    this._renderMovies(this._mostCommentedMovies, mostCommentedContainer, 0, this._renderedExtraMoviesCount);
+  }
+
+  _renderMoviesList() {
+    if (this._movies.length === 0) {
+      this._renderNoMovies();
+      return;
     }
+    this._renderAllMovies(this._renderedGeneralMoviesCount);
+    this._renderShowMoreButton();
+  }
+
+  _clearMoviesList() {
+    Object
+      .values(this._moviePresenter)
+      .forEach((presenter) => presenter.destroy());
+    this._moviePresenter = {};
+    this._renderedGeneralMoviesCount = GENERAL_MOVIES_COUNT;
+    remove(this._showMoreButtonComponent);
   }
 }
