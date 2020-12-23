@@ -45,6 +45,11 @@ const compareComments = (a, b) => {
   return b.comments - a.comments;
 };
 
+/**
+ * Сравнивает элементы массива фильмов по количеству комментариев.
+ * @param {object} template - Текущий элемент массива.
+ * @return {result}
+ */
 const createElement = (template) => {
   const newElement = document.createElement(`div`);
   newElement.innerHTML = template;

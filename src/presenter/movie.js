@@ -1,11 +1,8 @@
 import MovieCardView from "../view/movie-card/movie-card.js";
 import MoviePopupView from "../view/movie-popup/movie-popup.js";
 import MoviesListPresenter from "./movies-list.js";
-import NavigationPresenter from "./navigation.js";
-import {getRightId} from "../mock/movies.js";
 import {isEscEvent} from "../utils/common.js";
-import {compareRate, compareComments} from "../utils/common.js";
-import {siteBody, navigation, movies, filters} from "../main.js";
+import {siteBody, movies} from "../main.js";
 import {remove, render, replace, RenderPosition} from "../utils/render.js";
 
 export default class Movie {
@@ -20,8 +17,7 @@ export default class Movie {
     this._openMoviePopupHandler = this._openMoviePopupHandler.bind(this);
     this._closePopupInClickHandler = this._closePopupInClickHandler.bind(this);
     this._closePopupInEscHandler = this._closePopupInEscHandler.bind(this);
-    this._changeMovieCardDataHandler = this._changeMovieCardDataHandler.bind(this);
-    this._changeMoviePopupDataHandler = this._changeMoviePopupDataHandler.bind(this);
+    this._changeDataHandler = this._changeDataHandler.bind(this);
   }
 
   init(movie) {
@@ -36,8 +32,8 @@ export default class Movie {
 
     this._movieComponent.setMovieCardOpenHandler(() => this._openMoviePopupHandler());
 
-    this._movieComponent.setMovieCardChangeDataHandler((evt) => this._changeMovieCardDataHandler(evt));
-    this._moviePopupComponent.setPopupChangeDataHandler((evt) => this._changeMoviePopupDataHandler(evt));
+    this._movieComponent.setMovieCardChangeDataHandler((evt) => this._changeDataHandler(evt));
+    this._moviePopupComponent.setPopupChangeDataHandler((evt) => this._changeDataHandler(evt));
 
     if (prevMovieComponent === null) {
       render(this._moviesListContainer, this._movieComponent, RenderPosition.BEFOREEND);
@@ -46,6 +42,7 @@ export default class Movie {
     }
 
     replace(this._movieComponent, prevMovieComponent);
+    this._movieComponent.getElement().setAttribute(`data-id`, this._movie.id);
     replace(this._moviePopupComponent, prevMoviePopupComponent);
 
     remove(prevMovieComponent);
@@ -70,83 +67,39 @@ export default class Movie {
     this._moviePopupComponent.delete();
   }
 
-  _changeMovieCardDataHandler(evt) {
-    switch (evt.textContent) {
-      case `Add to watchlist`:
-        this._changeData(
-            Object.assign(
-                {},
-                this._movie,
-                {
-                  isWatchList: !this._movie.isWatchList
-                }
-            )
-        );
-        break;
-      case `Mark as watched`:
-        this._changeData(
-            Object.assign(
-                {},
-                this._movie,
-                {
-                  isWatched: !this._movie.isWatched
-                }
-            )
-        );
-        break;
-      case `Mark as favorite`:
-        this._changeData(
-            Object.assign(
-                {},
-                this._movie,
-                {
-                  isFavorite: !this._movie.isFavorite
-                }
-            )
-        );
-        break;
-      default:
-        break;
+  _changeDataHandler(evt) {
+    if (evt.className.includes(`watchlist`)) {
+      this._changeData(
+          Object.assign(
+              {},
+              this._movie,
+              {
+                isWatchList: !this._movie.isWatchList
+              }
+          )
+      );
     }
-  }
-
-  _changeMoviePopupDataHandler(evt) {
-    switch (evt.textContent) {
-      case `Add to watchlist`:
-        this._changeData(
-            Object.assign(
-                {},
-                this._movie,
-                {
-                  isWatchList: !this._movie.isWatchList
-                }
-            )
-        );
-        break;
-      case `Already watched`:
-        this._changeData(
-            Object.assign(
-                {},
-                this._movie,
-                {
-                  isWatched: !this._movie.isWatched
-                }
-            )
-        );
-        break;
-      case `Add to favorites`:
-        this._changeData(
-            Object.assign(
-                {},
-                this._movie,
-                {
-                  isFavorite: !this._movie.isFavorite
-                }
-            )
-        );
-        break;
-      default:
-        break;
+    if (evt.className.includes(`watched`)) {
+      this._changeData(
+          Object.assign(
+              {},
+              this._movie,
+              {
+                isWatched: !this._movie.isWatched
+              }
+          )
+      );
+    }
+    if (evt.className.includes(`favorite`)) {
+      this._changeData(
+          Object.assign(
+              {},
+              this._movie,
+              {
+                isFavorite: !this._movie.isFavorite
+              }
+          )
+      );
     }
   }
 

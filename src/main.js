@@ -2,8 +2,7 @@ import UserRankView from "./view/user-rank.js";
 import NavigationView from "./view/navigation/navigation.js";
 import SortView from "./view/sort.js";
 import StatisticView from "./view/statistic.js";
-import MoviesList from "./presenter/movies-list2.js";
-// import Navigation from "./presenter/navigation.js";
+import MoviesList from "./presenter/movies-list.js";
 import {generateMovie} from "./mock/movies.js";
 import {generateComment} from "./mock/comments.js";
 import {generateFilter} from "./mock/filters.js";
@@ -26,18 +25,11 @@ for (let i = 0; i < MOVIES_MOCK_COUNT; i++) {
 let comments = new Array(COMMENTS_MOCK_COUNT).fill().map(generateComment);
 let filters = generateFilter(movies);
 
-console.log(movies);
-
-const movieList = new MoviesList(siteMain);
-// const navigation = new Navigation(siteMain, filters);
-
-// генерация элементов разметки
-
 render(siteHeader, new UserRankView().getElement(), RenderPosition.BEFOREEND);
 render(siteMain, new NavigationView(filters).getElement(), RenderPosition.BEFOREEND);
-// navigation.init(filters);
 render(siteMain, new SortView().getElement(), RenderPosition.BEFOREEND);
-movieList.init(movies);
 render(footerStatistic, new StatisticView().getElement(), RenderPosition.BEFOREEND);
+
+const movieList = new MoviesList(siteMain).init(movies);
 
 export {siteBody, movies, filters};
