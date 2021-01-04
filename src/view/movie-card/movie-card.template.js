@@ -1,5 +1,5 @@
 export const createMovieCard = (movie) => {
-  const {name, rate, year, duration, genre, poster, descriptionShort, comments} = movie;
+  const {name, rate, year, duration, genre, poster, descriptionShort, comments, isWatchList, isWatched, isFavorite} = movie;
 
   return `<article class="film-card">
   <h3 class="film-card__title">${name}</h3>
@@ -13,9 +13,9 @@ export const createMovieCard = (movie) => {
   <p class="film-card__description">${descriptionShort}</p>
   <a class="film-card__comments">${comments} comments</a>
   <div class="film-card__controls">
-    <button class="film-card__controls-item button film-card__controls-item--add-to-watchlist" type="button">Add to watchlist</button>
-    <button class="film-card__controls-item button film-card__controls-item--mark-as-watched film-card__controls-item--active" type="button">Mark as watched</button>
-    <button class="film-card__controls-item button film-card__controls-item--favorite" type="button">Mark as favorite</button>
+    <button class="film-card__controls-item button film-card__controls-item--add-to-watchlist ${isWatchList ? `film-card__controls-item--active` : ``}" type="button">Add to watchlist</button>
+    <button class="film-card__controls-item button film-card__controls-item--mark-as-watched ${isWatched ? `film-card__controls-item--active` : ``}" type="button">Mark as watched</button>
+    <button class="film-card__controls-item button film-card__controls-item--favorite ${isFavorite ? `film-card__controls-item--active` : ``}" type="button">Mark as favorite</button>
   </div>
   </article>`;
 };

@@ -12,6 +12,7 @@ export default class MovieCard extends AbstractView {
   getTemplate() {
     return createMovieCard(this._movie);
   }
+
   _movieCardOpenHandler(evt) {
     evt.preventDefault();
     const target = evt.target;
@@ -25,6 +26,7 @@ export default class MovieCard extends AbstractView {
         break;
     }
   }
+
   _movieCardChangeDataHandler(evt) {
     evt.preventDefault();
     const target = evt.target;
@@ -36,10 +38,12 @@ export default class MovieCard extends AbstractView {
         break;
     }
   }
+
   setMovieCardOpenHandler(callback) {
     this._callback.popupOpen = callback;
     this.getElement().addEventListener(`click`, this._movieCardOpenHandler);
   }
+
   setMovieCardChangeDataHandler(callback) {
     this._callback.changeData = callback;
     this.getElement().addEventListener(`click`, this._movieCardChangeDataHandler);

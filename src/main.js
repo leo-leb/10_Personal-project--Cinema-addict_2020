@@ -17,13 +17,11 @@ const siteMain = siteBody.querySelector(`main`);
 const siteFooter = siteBody.querySelector(`footer`);
 const footerStatistic = siteFooter.querySelector(`.footer__statistics`);
 
-
-let movies = [];
-for (let i = 0; i < MOVIES_MOCK_COUNT; i++) {
-  movies.push(generateMovie(i));
-}
+let movies = new Array(MOVIES_MOCK_COUNT).fill().map(generateMovie);
 let comments = new Array(COMMENTS_MOCK_COUNT).fill().map(generateComment);
 let filters = generateFilter(movies);
+
+console.log(movies);
 
 render(siteHeader, new UserRankView().getElement(), RenderPosition.BEFOREEND);
 render(siteMain, new NavigationView(filters).getElement(), RenderPosition.BEFOREEND);

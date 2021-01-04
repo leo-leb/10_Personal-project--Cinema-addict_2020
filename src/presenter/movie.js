@@ -5,6 +5,11 @@ import {isEscEvent} from "../utils/common.js";
 import {siteBody, movies} from "../main.js";
 import {remove, render, replace, RenderPosition} from "../utils/render.js";
 
+const Mode = {
+  POPUP_CLOSED: `CLOSED`,
+  POPUP_OPEN: `OPEN`
+};
+
 export default class Movie {
   constructor(moviesListContainer, changeData) {
     this._moviesListContainer = moviesListContainer;
@@ -13,10 +18,11 @@ export default class Movie {
 
     this._movieComponent = null;
     this._moviePopupComponent = null;
+    this._mode = Mode.POPUP_CLOSED;
 
     this._openMoviePopupHandler = this._openMoviePopupHandler.bind(this);
     this._closePopupInClickHandler = this._closePopupInClickHandler.bind(this);
-    this._closePopupInEscHandler = this._closePopupInEscHandler.bind(this);
+    this._closePopupIfEscHandler = this._closePopupIfEscHandler.bind(this);
     this._changeDataHandler = this._changeDataHandler.bind(this);
   }
 
@@ -31,40 +37,53 @@ export default class Movie {
     this._MoviesListPresenter = new MoviesListPresenter(this._movies);
 
     this._movieComponent.setMovieCardOpenHandler(() => this._openMoviePopupHandler());
-
     this._movieComponent.setMovieCardChangeDataHandler((evt) => this._changeDataHandler(evt));
     this._moviePopupComponent.setPopupChangeDataHandler((evt) => this._changeDataHandler(evt));
 
-    if (prevMovieComponent === null) {
+    if (prevMovieComponent === null || prevMoviePopupComponent === null) {
       render(this._moviesListContainer, this._movieComponent, RenderPosition.BEFOREEND);
-      this._movieComponent.getElement().setAttribute(`data-id`, this._movie.id);
       return;
     }
 
-    replace(this._movieComponent, prevMovieComponent);
-    this._movieComponent.getElement().setAttribute(`data-id`, this._movie.id);
-    replace(this._moviePopupComponent, prevMoviePopupComponent);
+    if (this._moviesListContainer.contains(prevMovieComponent.getElement())) {
+      replace(this._movieComponent, prevMovieComponent);
+    }
+
+    if (this._mode === Mode.POPUP_OPEN) {
+      replace(this._moviePopupComponent, prevMoviePopupComponent);
+      this._moviePopupComponent.setPopupCloseHandler(() => this._closePopupInClickHandler());
+    }
 
     remove(prevMovieComponent);
     remove(prevMoviePopupComponent);
   }
 
   _openMoviePopupHandler() {
-    const existingPopup = siteBody.querySelector(`.film-details`);
+    const currentPopup = siteBody.querySelector(`.film-details`);
 
-    if (existingPopup) {
-      existingPopup.remove();
+    if (currentPopup) {
+      currentPopup.remove();
       render(siteBody, this._moviePopupComponent, RenderPosition.BEFOREEND);
     } else {
       render(siteBody, this._moviePopupComponent, RenderPosition.BEFOREEND);
     }
 
     this._moviePopupComponent.setPopupCloseHandler(() => this._closePopupInClickHandler());
-    document.addEventListener(`keydown`, this._closePopupInEscHandler);
+    document.addEventListener(`keydown`, this._closePopupIfEscHandler);
+    this._mode = Mode.POPUP_OPEN;
   }
 
   _closePopupInClickHandler() {
     this._moviePopupComponent.delete();
+    this._mode = Mode.POPUP_CLOSED;
+  }
+
+  _closePopupIfEscHandler(evt) {
+    isEscEvent(evt, () => {
+      this._moviePopupComponent.delete();
+      document.removeEventListener(`keydown`, this._closePopupIfEscHandler);
+      this._mode = Mode.POPUP_CLOSED;
+    });
   }
 
   _changeDataHandler(evt) {
@@ -103,14 +122,8 @@ export default class Movie {
     }
   }
 
-  _closePopupInEscHandler(evt) {
-    isEscEvent(evt, () => {
-      this._moviePopupComponent.delete();
-      document.removeEventListener(`keydown`, this._escKeyDownHandler);
-    });
-  }
-
   _destroy() {
     remove(this._movieComponent);
+    remove(this._moviePopupComponent);
   }
 }

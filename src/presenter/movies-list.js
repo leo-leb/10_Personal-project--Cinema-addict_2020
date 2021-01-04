@@ -16,7 +16,10 @@ const MOST_COMMENTED_MOVIES_NAME = `Most commented`;
 export default class MoviesList {
   constructor(moviesContainer) {
     this._moviesContainer = moviesContainer;
-    this._moviePresenter = {};
+
+    this._moviesPresenter = {};
+    this._mostRatedMoviesPresenter = {};
+    this._mostCommentedMoviesPresenter = {};
 
     this._renderedGeneralMoviesCount = GENERAL_MOVIES_COUNT;
     this._renderedExtraMoviesCount = EXTRA_MOVIES_COUNT;
@@ -60,29 +63,37 @@ export default class MoviesList {
     let generalMoviesExtraCount = generalMoviesVolume + this._renderedExtraGeneralMoviesCount;
 
     if (this._movies.length - generalMoviesVolume <= 5) {
-      this._renderMovies(this._movies, generalContainer, generalMoviesVolume, generalMoviesExtraCount);
+      this._renderMovies(this._movies, generalContainer, generalMoviesVolume, generalMoviesExtraCount, this._moviesPresenter);
       this._showMoreButtonComponent.delete();
       return;
     }
 
-    this._renderMovies(this._movies, generalContainer, generalMoviesVolume, generalMoviesExtraCount);
+    this._renderMovies(this._movies, generalContainer, generalMoviesVolume, generalMoviesExtraCount, this._moviesPresenter);
   }
 
-  _renderMovie(place, movie) {
+  _renderMovie(place, movie, presenter) {
     const moviePresenter = new MoviePresenter(place, this._handleMoviesChange);
     moviePresenter.init(movie);
-    this._moviePresenter[movie.id] = moviePresenter;
+    presenter[movie.id] = moviePresenter;
   }
 
   _handleMoviesChange(updatedMovie) {
     this._movies = updateItem(this._movies, updatedMovie);
-    this._moviePresenter[updatedMovie.id].init(updatedMovie);
+    this._updatePresenter(this._moviesPresenter, updatedMovie);
+    this._updatePresenter(this._mostRatedMoviesPresenter, updatedMovie);
+    this._updatePresenter(this._mostCommentedMoviesPresenter, updatedMovie);
   }
 
-  _renderMovies(source, place, from, to) {
+  _updatePresenter(presenter, updatedMovie) {
+    if (presenter.hasOwnProperty(updatedMovie.id)) {
+      presenter[updatedMovie.id].init(updatedMovie);
+    }
+  }
+
+  _renderMovies(source, place, from, to, presenter) {
     source
       .slice(from, to)
-      .forEach((movie) => this._renderMovie(place, movie));
+      .forEach((movie) => this._renderMovie(place, movie, presenter));
   }
 
   _renderAllMovies(toForGeneral) {
@@ -90,9 +101,9 @@ export default class MoviesList {
     const mostRatedContainer = getRightMoviesContainer(MOST_RATED_MOVIES_NAME).querySelector(`.films-list__container`);
     const mostCommentedContainer = getRightMoviesContainer(MOST_COMMENTED_MOVIES_NAME).querySelector(`.films-list__container`);
 
-    this._renderMovies(this._movies, generalContainer, 0, toForGeneral);
-    this._renderMovies(this._mostRatedMovies, mostRatedContainer, 0, this._renderedExtraMoviesCount);
-    this._renderMovies(this._mostCommentedMovies, mostCommentedContainer, 0, this._renderedExtraMoviesCount);
+    this._renderMovies(this._movies, generalContainer, 0, toForGeneral, this._moviesPresenter);
+    this._renderMovies(this._mostRatedMovies, mostRatedContainer, 0, this._renderedExtraMoviesCount, this._mostRatedMoviesPresenter);
+    this._renderMovies(this._mostCommentedMovies, mostCommentedContainer, 0, this._renderedExtraMoviesCount, this._mostCommentedMoviesPresenter);
   }
 
   _renderMoviesList() {
@@ -106,9 +117,9 @@ export default class MoviesList {
 
   _clearMoviesList() {
     Object
-      .values(this._moviePresenter)
+      .values(this._moviesPresenter)
       .forEach((presenter) => presenter.destroy());
-    this._moviePresenter = {};
+    this._moviesPresenter = {};
     this._renderedGeneralMoviesCount = GENERAL_MOVIES_COUNT;
     remove(this._showMoreButtonComponent);
   }
