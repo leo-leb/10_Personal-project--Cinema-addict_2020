@@ -2,7 +2,7 @@ import MovieListContainerView from "../view/movie-list-container/movie-list-cont
 import NoMoviesView from "../view/no-movies.js";
 import ShowMoreButtonView from "../view/show-more-movies.js";
 import MoviePresenter from "./movie.js";
-import {render, RenderPosition, getRightMoviesContainer, remove} from "../utils/render.js";
+import {render, RenderPosition, getRightMoviesContainer} from "../utils/render.js";
 import {compareRate, compareComments, updateItem} from "../utils/common.js";
 
 const GENERAL_MOVIES_COUNT = 5;
@@ -30,7 +30,7 @@ export default class MoviesList {
     this._showMoreButtonComponent = new ShowMoreButtonView();
 
     this._handleShowMoreButtonClick = this._handleShowMoreButtonClick.bind(this);
-    this._handleMoviesChange = this._handleMoviesChange.bind(this);
+    this._handleMovieChange = this._handleMovieChange.bind(this);
   }
 
   init(movies) {
@@ -40,6 +40,28 @@ export default class MoviesList {
 
     render(this._moviesContainer, this._movieListContainerComponent, RenderPosition.BEFOREEND);
     this._renderMoviesList();
+  }
+
+  _renderMovie(place, movie, presenter) {
+    const moviePresenter = new MoviePresenter(place, this._handleMovieChange);
+    moviePresenter.init(movie);
+    presenter[movie.id] = moviePresenter;
+  }
+
+  _renderMovies(source, place, from, to, presenter) {
+    source
+      .slice(from, to)
+      .forEach((movie) => this._renderMovie(place, movie, presenter));
+  }
+
+  _renderAllMovies() {
+    const generalContainer = getRightMoviesContainer(ALL_MOVIES_NAME).querySelector(`.films-list__container`);
+    const mostRatedContainer = getRightMoviesContainer(MOST_RATED_MOVIES_NAME).querySelector(`.films-list__container`);
+    const mostCommentedContainer = getRightMoviesContainer(MOST_COMMENTED_MOVIES_NAME).querySelector(`.films-list__container`);
+
+    this._renderMovies(this._movies, generalContainer, 0, this._renderedGeneralMoviesCount, this._moviesPresenter);
+    this._renderMovies(this._mostRatedMovies, mostRatedContainer, 0, this._renderedExtraMoviesCount, this._mostRatedMoviesPresenter);
+    this._renderMovies(this._mostCommentedMovies, mostCommentedContainer, 0, this._renderedExtraMoviesCount, this._mostCommentedMoviesPresenter);
   }
 
   _renderNoMovies() {
@@ -57,6 +79,15 @@ export default class MoviesList {
     this._showMoreButtonComponent.setClickHandler(this._handleShowMoreButtonClick);
   }
 
+  _renderMoviesList() {
+    if (this._movies.length === 0) {
+      this._renderNoMovies();
+      return;
+    }
+    this._renderAllMovies();
+    this._renderShowMoreButton();
+  }
+
   _handleShowMoreButtonClick() {
     const generalContainer = getRightMoviesContainer(ALL_MOVIES_NAME).querySelector(`.films-list__container`);
     const generalMoviesVolume = generalContainer.children.length;
@@ -71,56 +102,16 @@ export default class MoviesList {
     this._renderMovies(this._movies, generalContainer, generalMoviesVolume, generalMoviesExtraCount, this._moviesPresenter);
   }
 
-  _renderMovie(place, movie, presenter) {
-    const moviePresenter = new MoviePresenter(place, this._handleMoviesChange);
-    moviePresenter.init(movie);
-    presenter[movie.id] = moviePresenter;
-  }
-
-  _handleMoviesChange(updatedMovie) {
-    this._movies = updateItem(this._movies, updatedMovie);
-    this._updatePresenter(this._moviesPresenter, updatedMovie);
-    this._updatePresenter(this._mostRatedMoviesPresenter, updatedMovie);
-    this._updatePresenter(this._mostCommentedMoviesPresenter, updatedMovie);
-  }
-
   _updatePresenter(presenter, updatedMovie) {
     if (presenter.hasOwnProperty(updatedMovie.id)) {
       presenter[updatedMovie.id].init(updatedMovie);
     }
   }
 
-  _renderMovies(source, place, from, to, presenter) {
-    source
-      .slice(from, to)
-      .forEach((movie) => this._renderMovie(place, movie, presenter));
-  }
-
-  _renderAllMovies(toForGeneral) {
-    const generalContainer = getRightMoviesContainer(ALL_MOVIES_NAME).querySelector(`.films-list__container`);
-    const mostRatedContainer = getRightMoviesContainer(MOST_RATED_MOVIES_NAME).querySelector(`.films-list__container`);
-    const mostCommentedContainer = getRightMoviesContainer(MOST_COMMENTED_MOVIES_NAME).querySelector(`.films-list__container`);
-
-    this._renderMovies(this._movies, generalContainer, 0, toForGeneral, this._moviesPresenter);
-    this._renderMovies(this._mostRatedMovies, mostRatedContainer, 0, this._renderedExtraMoviesCount, this._mostRatedMoviesPresenter);
-    this._renderMovies(this._mostCommentedMovies, mostCommentedContainer, 0, this._renderedExtraMoviesCount, this._mostCommentedMoviesPresenter);
-  }
-
-  _renderMoviesList() {
-    if (this._movies.length === 0) {
-      this._renderNoMovies();
-      return;
-    }
-    this._renderAllMovies(this._renderedGeneralMoviesCount);
-    this._renderShowMoreButton();
-  }
-
-  _clearMoviesList() {
-    Object
-      .values(this._moviesPresenter)
-      .forEach((presenter) => presenter.destroy());
-    this._moviesPresenter = {};
-    this._renderedGeneralMoviesCount = GENERAL_MOVIES_COUNT;
-    remove(this._showMoreButtonComponent);
+  _handleMovieChange(updatedMovie) {
+    this._movies = updateItem(this._movies, updatedMovie);
+    this._updatePresenter(this._moviesPresenter, updatedMovie);
+    this._updatePresenter(this._mostRatedMoviesPresenter, updatedMovie);
+    this._updatePresenter(this._mostCommentedMoviesPresenter, updatedMovie);
   }
 }

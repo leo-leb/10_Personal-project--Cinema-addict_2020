@@ -1,42 +1,76 @@
 import {createMoviePopup} from "./movie-popup.templalte.js";
-import AbstractView from "../abstract.js";
+import SmartView from "../smart.js";
 
-export default class MoviePopup extends AbstractView {
+export default class MoviePopup extends SmartView {
   constructor(movie) {
     super();
     this._movie = movie;
+
     this._popupCloseHandler = this._popupCloseHandler.bind(this);
-    this._popupChangeDataHandler = this._popupChangeDataHandler.bind(this);
+
+    this._watchlistToggleHandler = this._watchlistToggleHandler.bind(this);
+    this._watchedToggleHandler = this._watchedToggleHandler.bind(this);
+    this._favoriteToggleHandler = this._favoriteToggleHandler.bind(this);
+
+    this._setInnerHandlers();
   }
 
   getTemplate() {
     return createMoviePopup(this._movie);
   }
+
+  restoreHandlers() {
+    this._setInnerHandlers();
+    this.setCloseButtonClickHandler(this._callback.popupClose);
+  }
+
+  _setInnerHandlers() {
+    this.getElement()
+      .querySelector(`.film-details__control-label--watchlist`)
+      .addEventListener(`click`, this._watchlistToggleHandler);
+
+    this.getElement()
+      .querySelector(`.film-details__control-label--watched`)
+      .addEventListener(`click`, this._watchedToggleHandler);
+
+    this.getElement()
+      .querySelector(`.film-details__control-label--favorite`)
+      .addEventListener(`click`, this._favoriteToggleHandler);
+  }
+
   _popupCloseHandler(evt) {
     evt.preventDefault();
     this._callback.popupClose();
   }
-  _popupChangeDataHandler(evt) {
+
+  _watchlistToggleHandler(evt) {
     evt.preventDefault();
-    const target = evt.target;
-    switch (target.tagName) {
-      case `LABEL`:
-        this._callback.changeData(target);
-        break;
-      default:
-        break;
-    }
+    this._callback.changeData(this.updateData({
+      isWatchList: !this._movie.isWatchList
+    }));
   }
-  delete() {
-    this.getElement().remove();
-    this.removeElement();
+
+  _watchedToggleHandler(evt) {
+    evt.preventDefault();
+    this._callback.changeData(this.updateData({
+      isWatched: !this._movie.isWatched
+    }));
   }
-  setPopupCloseHandler(callback) {
+
+  _favoriteToggleHandler(evt) {
+    evt.preventDefault();
+    this._callback.changeData(this.updateData({
+      isFavorite: !this._movie.isFavorite
+    }));
+  }
+
+  setCloseButtonClickHandler(callback) {
     this._callback.popupClose = callback;
     this.getElement().querySelector(`.film-details__close-btn`).addEventListener(`click`, this._popupCloseHandler);
   }
-  setPopupChangeDataHandler(callback) {
+
+  setControlsClickHandler(callback) {
     this._callback.changeData = callback;
-    this.getElement().addEventListener(`click`, this._popupChangeDataHandler);
+    this._setInnerHandlers();
   }
 }

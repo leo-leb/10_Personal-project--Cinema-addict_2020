@@ -20,10 +20,9 @@ export default class Movie {
     this._moviePopupComponent = null;
     this._mode = Mode.POPUP_CLOSED;
 
-    this._openMoviePopupHandler = this._openMoviePopupHandler.bind(this);
-    this._closePopupInClickHandler = this._closePopupInClickHandler.bind(this);
-    this._closePopupIfEscHandler = this._closePopupIfEscHandler.bind(this);
-    this._changeDataHandler = this._changeDataHandler.bind(this);
+    this._handleOpenClick = this._handleOpenClick.bind(this);
+    this._handleCloseClick = this._handleCloseClick.bind(this);
+    this._onPopupEsc = this._onPopupEsc.bind(this);
   }
 
   init(movie) {
@@ -36,9 +35,9 @@ export default class Movie {
     this._moviePopupComponent = new MoviePopupView(movie);
     this._MoviesListPresenter = new MoviesListPresenter(this._movies);
 
-    this._movieComponent.setMovieCardOpenHandler(() => this._openMoviePopupHandler());
-    this._movieComponent.setMovieCardChangeDataHandler((evt) => this._changeDataHandler(evt));
-    this._moviePopupComponent.setPopupChangeDataHandler((evt) => this._changeDataHandler(evt));
+    this._movieComponent.setMovieClickHandler(() => this._handleOpenClick());
+    this._movieComponent.setControlsClickHandler((evt) => this._changeData(evt));
+    this._moviePopupComponent.setControlsClickHandler((evt) => this._changeData(evt));
 
     if (prevMovieComponent === null || prevMoviePopupComponent === null) {
       render(this._moviesListContainer, this._movieComponent, RenderPosition.BEFOREEND);
@@ -51,14 +50,14 @@ export default class Movie {
 
     if (this._mode === Mode.POPUP_OPEN) {
       replace(this._moviePopupComponent, prevMoviePopupComponent);
-      this._moviePopupComponent.setPopupCloseHandler(() => this._closePopupInClickHandler());
+      this._moviePopupComponent.setCloseButtonClickHandler(() => this._handleCloseClick());
     }
 
     remove(prevMovieComponent);
     remove(prevMoviePopupComponent);
   }
 
-  _openMoviePopupHandler() {
+  _openPopup() {
     const currentPopup = siteBody.querySelector(`.film-details`);
 
     if (currentPopup) {
@@ -68,62 +67,28 @@ export default class Movie {
       render(siteBody, this._moviePopupComponent, RenderPosition.BEFOREEND);
     }
 
-    this._moviePopupComponent.setPopupCloseHandler(() => this._closePopupInClickHandler());
-    document.addEventListener(`keydown`, this._closePopupIfEscHandler);
+    this._moviePopupComponent.setCloseButtonClickHandler(() => this._handleCloseClick());
+    document.addEventListener(`keydown`, this._onPopupEsc);
     this._mode = Mode.POPUP_OPEN;
   }
 
-  _closePopupInClickHandler() {
+  _closePopup() {
     this._moviePopupComponent.delete();
     this._mode = Mode.POPUP_CLOSED;
+    document.removeEventListener(`keydown`, this._closePopupIfEscHandler);
   }
 
-  _closePopupIfEscHandler(evt) {
+  _handleOpenClick() {
+    this._openPopup();
+  }
+
+  _handleCloseClick() {
+    this._closePopup();
+  }
+
+  _onPopupEsc(evt) {
     isEscEvent(evt, () => {
-      this._moviePopupComponent.delete();
-      document.removeEventListener(`keydown`, this._closePopupIfEscHandler);
-      this._mode = Mode.POPUP_CLOSED;
+      this._closePopup();
     });
-  }
-
-  _changeDataHandler(evt) {
-    if (evt.className.includes(`watchlist`)) {
-      this._changeData(
-          Object.assign(
-              {},
-              this._movie,
-              {
-                isWatchList: !this._movie.isWatchList
-              }
-          )
-      );
-    }
-    if (evt.className.includes(`watched`)) {
-      this._changeData(
-          Object.assign(
-              {},
-              this._movie,
-              {
-                isWatched: !this._movie.isWatched
-              }
-          )
-      );
-    }
-    if (evt.className.includes(`favorite`)) {
-      this._changeData(
-          Object.assign(
-              {},
-              this._movie,
-              {
-                isFavorite: !this._movie.isFavorite
-              }
-          )
-      );
-    }
-  }
-
-  _destroy() {
-    remove(this._movieComponent);
-    remove(this._moviePopupComponent);
   }
 }

@@ -21,8 +21,6 @@ let movies = new Array(MOVIES_MOCK_COUNT).fill().map(generateMovie);
 let comments = new Array(COMMENTS_MOCK_COUNT).fill().map(generateComment);
 let filters = generateFilter(movies);
 
-console.log(movies);
-
 render(siteHeader, new UserRankView().getElement(), RenderPosition.BEFOREEND);
 render(siteMain, new NavigationView(filters).getElement(), RenderPosition.BEFOREEND);
 render(siteMain, new SortView().getElement(), RenderPosition.BEFOREEND);

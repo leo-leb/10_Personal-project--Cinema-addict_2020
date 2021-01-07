@@ -1,19 +1,44 @@
 import {createMovieCard} from "./movie-card.template.js";
-import AbstractView from "../abstract.js";
+import SmartView from "../smart.js";
 
-export default class MovieCard extends AbstractView {
+export default class MovieCard extends SmartView {
   constructor(movie) {
     super();
     this._movie = movie;
-    this._movieCardOpenHandler = this._movieCardOpenHandler.bind(this);
-    this._movieCardChangeDataHandler = this._movieCardChangeDataHandler.bind(this);
+
+    this._popupOpenHandler = this._popupOpenHandler.bind(this);
+
+    this._watchlistToggleHandler = this._watchlistToggleHandler.bind(this);
+    this._watchedToggleHandler = this._watchedToggleHandler.bind(this);
+    this._favoriteToggleHandler = this._favoriteToggleHandler.bind(this);
+
+    this._setInnerHandlers();
   }
 
   getTemplate() {
     return createMovieCard(this._movie);
   }
 
-  _movieCardOpenHandler(evt) {
+  restoreHandlers() {
+    this._setInnerHandlers();
+    this.setMovieClickHandler(this._callback.popupOpen);
+  }
+
+  _setInnerHandlers() {
+    this.getElement()
+      .querySelector(`.film-card__controls-item--add-to-watchlist`)
+      .addEventListener(`click`, this._watchlistToggleHandler);
+
+    this.getElement()
+      .querySelector(`.film-card__controls-item--mark-as-watched`)
+      .addEventListener(`click`, this._watchedToggleHandler);
+
+    this.getElement()
+      .querySelector(`.film-card__controls-item--favorite`)
+      .addEventListener(`click`, this._favoriteToggleHandler);
+  }
+
+  _popupOpenHandler(evt) {
     evt.preventDefault();
     const target = evt.target;
     switch (target.classList.value) {
@@ -27,25 +52,34 @@ export default class MovieCard extends AbstractView {
     }
   }
 
-  _movieCardChangeDataHandler(evt) {
+  _watchlistToggleHandler(evt) {
     evt.preventDefault();
-    const target = evt.target;
-    switch (target.tagName) {
-      case `BUTTON`:
-        this._callback.changeData(target);
-        break;
-      default:
-        break;
-    }
+    this._callback.changeData(this.updateData({
+      isWatchList: !this._movie.isWatchList
+    }));
   }
 
-  setMovieCardOpenHandler(callback) {
+  _watchedToggleHandler(evt) {
+    evt.preventDefault();
+    this._callback.changeData(this.updateData({
+      isWatched: !this._movie.isWatched
+    }));
+  }
+
+  _favoriteToggleHandler(evt) {
+    evt.preventDefault();
+    this._callback.changeData(this.updateData({
+      isFavorite: !this._movie.isFavorite
+    }));
+  }
+
+  setMovieClickHandler(callback) {
     this._callback.popupOpen = callback;
-    this.getElement().addEventListener(`click`, this._movieCardOpenHandler);
+    this.getElement().addEventListener(`click`, this._popupOpenHandler);
   }
 
-  setMovieCardChangeDataHandler(callback) {
+  setControlsClickHandler(callback) {
     this._callback.changeData = callback;
-    this.getElement().addEventListener(`click`, this._movieCardChangeDataHandler);
+    this._setInnerHandlers();
   }
 }
