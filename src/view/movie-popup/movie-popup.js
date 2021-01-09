@@ -45,32 +45,27 @@ export default class MoviePopup extends SmartView {
 
   _watchlistToggleHandler(evt) {
     evt.preventDefault();
-    this._callback.changeData(this.updateData({
+    this.updateData({
       isWatchList: !this._movie.isWatchList
-    }));
+    });
   }
 
   _watchedToggleHandler(evt) {
     evt.preventDefault();
-    this._callback.changeData(this.updateData({
+    this.updateData({
       isWatched: !this._movie.isWatched
-    }));
+    });
   }
 
   _favoriteToggleHandler(evt) {
     evt.preventDefault();
-    this._callback.changeData(this.updateData({
+    this.updateData({
       isFavorite: !this._movie.isFavorite
-    }));
+    });
   }
 
   setCloseButtonClickHandler(callback) {
     this._callback.popupClose = callback;
     this.getElement().querySelector(`.film-details__close-btn`).addEventListener(`click`, this._popupCloseHandler);
-  }
-
-  setControlsClickHandler(callback) {
-    this._callback.changeData = callback;
-    this._setInnerHandlers();
   }
 }

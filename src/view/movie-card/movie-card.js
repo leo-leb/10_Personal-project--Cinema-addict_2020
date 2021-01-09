@@ -54,32 +54,27 @@ export default class MovieCard extends SmartView {
 
   _watchlistToggleHandler(evt) {
     evt.preventDefault();
-    this._callback.changeData(this.updateData({
+    this.updateData({
       isWatchList: !this._movie.isWatchList
-    }));
+    });
   }
 
   _watchedToggleHandler(evt) {
     evt.preventDefault();
-    this._callback.changeData(this.updateData({
+    this.updateData({
       isWatched: !this._movie.isWatched
-    }));
+    });
   }
 
   _favoriteToggleHandler(evt) {
     evt.preventDefault();
-    this._callback.changeData(this.updateData({
+    this.updateData({
       isFavorite: !this._movie.isFavorite
-    }));
+    });
   }
 
   setMovieClickHandler(callback) {
     this._callback.popupOpen = callback;
     this.getElement().addEventListener(`click`, this._popupOpenHandler);
-  }
-
-  setControlsClickHandler(callback) {
-    this._callback.changeData = callback;
-    this._setInnerHandlers();
   }
 }

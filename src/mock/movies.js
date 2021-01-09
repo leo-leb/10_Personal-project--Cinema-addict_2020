@@ -38,7 +38,7 @@ const generateMovie = () => {
     actors: getRandomValuesAndPerformToString(castsList, PEOPLE_MAX, `,`),
     isWatchList: Boolean(getRandomInteger(0, 1)),
     isWatched: Boolean(getRandomInteger(0, 1)),
-    isFavorite: Boolean(getRandomInteger(0, 1))
+    isFavorite: Boolean(getRandomInteger(0, 1)),
   };
 };
 
