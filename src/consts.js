@@ -1,0 +1,29 @@
+const Mode = {
+  POPUP_CLOSED: `CLOSED`,
+  POPUP_OPEN: `OPEN`
+};
+
+const RenderPosition = {
+  AFTERBEGIN: `afterbegin`,
+  BEFOREEND: `beforeend`
+};
+
+const MOVIES_MOCK_COUNT = 15;
+const COMMENTS_MOCK_COUNT = 5;
+
+const GENERAL_MOVIES_COUNT = 5;
+const GENERAL_MOVIES_EXTRA_COUNT = 5;
+const EXTRA_MOVIES_COUNT = 2;
+
+const ALL_MOVIES_NAME = `All movies. Upcoming`;
+const MOST_RATED_MOVIES_NAME = `Top rated`;
+const MOST_COMMENTED_MOVIES_NAME = `Most commented`;
+
+const ESC_KEYCODE = 27;
+const ENTER_KEYCODE = 13;
+
+export {Mode};
+export {RenderPosition};
+export {MOVIES_MOCK_COUNT, COMMENTS_MOCK_COUNT};
+export {GENERAL_MOVIES_COUNT, GENERAL_MOVIES_EXTRA_COUNT, EXTRA_MOVIES_COUNT, ALL_MOVIES_NAME, MOST_RATED_MOVIES_NAME, MOST_COMMENTED_MOVIES_NAME};
+export {ESC_KEYCODE, ENTER_KEYCODE};

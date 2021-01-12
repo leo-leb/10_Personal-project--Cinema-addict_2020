@@ -1,14 +1,10 @@
-import MovieCardView from "../view/movie-card/movie-card.js";
-import MoviePopupView from "../view/movie-popup/movie-popup.js";
-import MoviesListPresenter from "./movies-list.js";
-import {isEscEvent} from "../utils/common.js";
-import {siteBody, movies} from "../main.js";
-import {remove, render, replace, RenderPosition} from "../utils/render.js";
-
-const Mode = {
-  POPUP_CLOSED: `CLOSED`,
-  POPUP_OPEN: `OPEN`
-};
+import MovieCardView from "../view/movie-card/movie-card";
+import MoviePopupView from "../view/movie-popup/movie-popup";
+import MoviesListPresenter from "./movies-list";
+import {isEscEvent} from "../utils/common";
+import {siteBody, movies} from "../main";
+import {Mode} from "../consts";
+import {remove, render, replace, RenderPosition} from "../utils/render";
 
 export default class Movie {
   constructor(moviesListContainer, changeData) {
@@ -68,6 +64,7 @@ export default class Movie {
     }
 
     this._moviePopupComponent.setCloseButtonClickHandler(() => this._handleCloseClick());
+    this._moviePopupComponent.setControlsClickHandler((evt) => this._changeData(evt));
     document.addEventListener(`keydown`, this._onPopupEsc);
     this._mode = Mode.POPUP_OPEN;
   }

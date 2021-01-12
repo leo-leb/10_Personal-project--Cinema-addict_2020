@@ -1,6 +1,6 @@
-import NavigationView from "../view/navigation/navigation.js";
-import {generateFilter} from "../mock/filters.js";
-import {render, RenderPosition} from "../utils/render.js";
+import NavigationView from "../view/navigation/navigation";
+import {generateFilter} from "../mock/filters";
+import {render, RenderPosition} from "../utils/render";
 
 export default class Navigation {
   constructor(parent, filtersList) {

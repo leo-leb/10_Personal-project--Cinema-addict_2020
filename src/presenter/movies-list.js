@@ -1,17 +1,10 @@
-import MovieListContainerView from "../view/movie-list-container/movie-list-container.js";
-import NoMoviesView from "../view/no-movies.js";
-import ShowMoreButtonView from "../view/show-more-movies.js";
-import MoviePresenter from "./movie.js";
-import {render, RenderPosition, getRightMoviesContainer} from "../utils/render.js";
-import {compareRate, compareComments, updateItem} from "../utils/common.js";
-
-const GENERAL_MOVIES_COUNT = 5;
-const GENERAL_MOVIES_EXTRA_COUNT = 5;
-const EXTRA_MOVIES_COUNT = 2;
-
-const ALL_MOVIES_NAME = `All movies. Upcoming`;
-const MOST_RATED_MOVIES_NAME = `Top rated`;
-const MOST_COMMENTED_MOVIES_NAME = `Most commented`;
+import MovieListContainerView from "../view/movie-list-container/movie-list-container";
+import NoMoviesView from "../view/no-movies";
+import ShowMoreButtonView from "../view/show-more-movies";
+import MoviePresenter from "./movie";
+import {render, RenderPosition, getRightMoviesContainer} from "../utils/render";
+import {compareRate, compareComments, updateItem} from "../utils/common";
+import {GENERAL_MOVIES_COUNT, GENERAL_MOVIES_EXTRA_COUNT, EXTRA_MOVIES_COUNT, ALL_MOVIES_NAME, MOST_RATED_MOVIES_NAME, MOST_COMMENTED_MOVIES_NAME} from "../consts";
 
 export default class MoviesList {
   constructor(moviesContainer) {

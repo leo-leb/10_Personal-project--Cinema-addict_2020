@@ -1,4 +1,4 @@
-import AbstractView from "./abstract.js";
+import AbstractView from "./abstract";
 
 export default class Smart extends AbstractView {
   constructor() {
@@ -11,7 +11,7 @@ export default class Smart extends AbstractView {
     this.restoreHandlers();
   }
 
-  updateData(update) {
+  updateData(update, justDataUpdating, scrollPosition) {
     if (!update) {
       return;
     }
@@ -22,7 +22,14 @@ export default class Smart extends AbstractView {
         update
     );
 
+    if (justDataUpdating) {
+      return;
+    }
+
     this.updateElement();
+
+    const popupWindow = document.querySelector(`.film-details`);
+    popupWindow.scrollTop = scrollPosition;
   }
 
   getUpdatedMovie() {

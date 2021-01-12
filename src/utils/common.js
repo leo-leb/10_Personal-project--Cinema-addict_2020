@@ -1,5 +1,4 @@
-const ESC_KEYCODE = 27;
-const ENTER_KEYCODE = 13;
+import {ESC_KEYCODE, ENTER_KEYCODE} from "../consts";
 
 /**
  * Выполнение функции по нажатию на Escape.

@@ -1,5 +1,5 @@
-import {createMovieCard} from "./movie-card.template.js";
-import SmartView from "../smart.js";
+import {createMovieCard} from "./movie-card.template";
+import SmartView from "../smart";
 
 export default class MovieCard extends SmartView {
   constructor(movie) {

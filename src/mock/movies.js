@@ -28,6 +28,8 @@ const generateMovie = () => {
     descriptionShort: setSymbolsLimit(getRandomValuesAndPerformToString(descriptionTemplate.split(`. `), DESC_VOLUME_MAX, `.`) + `.`, DESC_LENGTH_MAX),
     descriptionFull: getRandomValuesAndPerformToString(descriptionTemplate.split(`. `), DESC_VOLUME_MAX, `.`) + `.`,
     comments: getRandomNumber(COMMENTS_MAX).toString(),
+    commentsLib: ``,
+    emotionStorage: ``,
     rate: (Math.random() * RATE_MAX).toFixed(1),
     year: createdYear.toString(),
     release: dayjs().set(`day`, getRandomNumber(DAYS)).set(`month`, getRandomNumber(MONTHES)).set(`year`, createdYear).format(`DD MMMM YYYY`),

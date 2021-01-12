@@ -1,5 +1,5 @@
-import {createMovieListContainer} from "./movie-list-container.template.js";
-import AbstractView from "../abstract.js";
+import {createMovieListContainer} from "./movie-list-container.template";
+import AbstractView from "../abstract";
 
 export default class MovieListContainer extends AbstractView {
   getTemplate() {

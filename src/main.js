@@ -1,15 +1,13 @@
-import UserRankView from "./view/user-rank.js";
-import NavigationView from "./view/navigation/navigation.js";
-import SortView from "./view/sort.js";
-import StatisticView from "./view/statistic.js";
-import MoviesList from "./presenter/movies-list.js";
-import {generateMovie} from "./mock/movies.js";
-import {generateComment} from "./mock/comments.js";
-import {generateFilter} from "./mock/filters.js";
-import {render, RenderPosition} from "./utils/render.js";
-
-const MOVIES_MOCK_COUNT = 15;
-const COMMENTS_MOCK_COUNT = 5;
+import UserRankView from "./view/user-rank";
+import NavigationView from "./view/navigation/navigation";
+import SortView from "./view/sort";
+import StatisticView from "./view/statistic";
+import MoviesList from "./presenter/movies-list";
+import {generateMovie} from "./mock/movies";
+import {generateComment} from "./mock/comments";
+import {generateFilter} from "./mock/filters";
+import {render, RenderPosition} from "./utils/render";
+import {MOVIES_MOCK_COUNT, COMMENTS_MOCK_COUNT} from "./consts";
 
 const siteBody = document.querySelector(`body`);
 const siteHeader = siteBody.querySelector(`header`);
