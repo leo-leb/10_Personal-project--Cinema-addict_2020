@@ -4,7 +4,7 @@ import ShowMoreButtonView from "../view/show-more-movies";
 import MoviePresenter from "./movie";
 import {render, RenderPosition, getRightMoviesContainer} from "../utils/render";
 import {compareRate, compareComments, updateItem} from "../utils/common";
-import {GENERAL_MOVIES_COUNT, GENERAL_MOVIES_EXTRA_COUNT, EXTRA_MOVIES_COUNT, ALL_MOVIES_NAME, MOST_RATED_MOVIES_NAME, MOST_COMMENTED_MOVIES_NAME} from "../consts";
+import {MoviesCount, MoviesTitles} from "../consts";
 
 export default class MoviesList {
   constructor(moviesContainer) {
@@ -14,9 +14,9 @@ export default class MoviesList {
     this._mostRatedMoviesPresenter = {};
     this._mostCommentedMoviesPresenter = {};
 
-    this._renderedGeneralMoviesCount = GENERAL_MOVIES_COUNT;
-    this._renderedExtraMoviesCount = EXTRA_MOVIES_COUNT;
-    this._renderedExtraGeneralMoviesCount = GENERAL_MOVIES_EXTRA_COUNT;
+    this._renderedGeneralMoviesCount = MoviesCount.GENERAL;
+    this._renderedExtraMoviesCount = MoviesCount.EXTRA;
+    this._renderedExtraGeneralMoviesCount = MoviesCount.GENERAL_EXTRA;
 
     this._movieListContainerComponent = new MovieListContainerView();
     this._noMoviesComponent = new NoMoviesView();
@@ -48,9 +48,9 @@ export default class MoviesList {
   }
 
   _renderAllMovies() {
-    const generalContainer = getRightMoviesContainer(ALL_MOVIES_NAME).querySelector(`.films-list__container`);
-    const mostRatedContainer = getRightMoviesContainer(MOST_RATED_MOVIES_NAME).querySelector(`.films-list__container`);
-    const mostCommentedContainer = getRightMoviesContainer(MOST_COMMENTED_MOVIES_NAME).querySelector(`.films-list__container`);
+    const generalContainer = getRightMoviesContainer(MoviesTitles.ALL).querySelector(`.films-list__container`);
+    const mostRatedContainer = getRightMoviesContainer(MoviesTitles.MOST_RATED).querySelector(`.films-list__container`);
+    const mostCommentedContainer = getRightMoviesContainer(MoviesTitles.MOST_COMMENTED).querySelector(`.films-list__container`);
 
     this._renderMovies(this._movies, generalContainer, 0, this._renderedGeneralMoviesCount, this._moviesPresenter);
     this._renderMovies(this._mostRatedMovies, mostRatedContainer, 0, this._renderedExtraMoviesCount, this._mostRatedMoviesPresenter);
@@ -62,7 +62,7 @@ export default class MoviesList {
   }
 
   _renderShowMoreButton() {
-    const generalMovieList = getRightMoviesContainer(ALL_MOVIES_NAME);
+    const generalMovieList = getRightMoviesContainer(MoviesTitles.ALL);
     const generalMoviesVolume = generalMovieList.querySelector(`.films-list__container`).children.length;
 
     if (generalMoviesVolume < this._movies.length) {
@@ -82,7 +82,7 @@ export default class MoviesList {
   }
 
   _handleShowMoreButtonClick() {
-    const generalContainer = getRightMoviesContainer(ALL_MOVIES_NAME).querySelector(`.films-list__container`);
+    const generalContainer = getRightMoviesContainer(MoviesTitles.ALL).querySelector(`.films-list__container`);
     const generalMoviesVolume = generalContainer.children.length;
     let generalMoviesExtraCount = generalMoviesVolume + this._renderedExtraGeneralMoviesCount;
 

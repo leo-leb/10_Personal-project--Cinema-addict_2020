@@ -1,6 +1,7 @@
 import dayjs from "dayjs";
 import {nanoid} from "nanoid";
 import {getRandomInteger, getRandomNumber, getRandomValue, getRandomValuesAndPerformToString, setSymbolsLimit} from "./common.js";
+import {generateComments} from "./comments.js";
 
 const DESC_VOLUME_MAX = 5;
 const DESC_LENGTH_MAX = 140;
@@ -21,15 +22,17 @@ let descriptionTemplate = `Lorem ipsum dolor sit amet, consectetur adipiscing el
 
 const generateMovie = () => {
   let createdYear = getRandomInteger(YEARS_START, YEARS_FINISH);
+  let commentsVolume = getRandomNumber(COMMENTS_MAX);
   return {
     id: nanoid(),
     name: getRandomValue(moviesList),
     poster: `./images/posters/${getRandomValue(postersList)}`,
     descriptionShort: setSymbolsLimit(getRandomValuesAndPerformToString(descriptionTemplate.split(`. `), DESC_VOLUME_MAX, `.`) + `.`, DESC_LENGTH_MAX),
     descriptionFull: getRandomValuesAndPerformToString(descriptionTemplate.split(`. `), DESC_VOLUME_MAX, `.`) + `.`,
-    comments: getRandomNumber(COMMENTS_MAX).toString(),
-    commentsLib: ``,
-    emotionStorage: ``,
+    comments: generateComments(commentsVolume),
+    commentCloud: false,
+    emotionCloud: false,
+    isEmotionClick: false,
     rate: (Math.random() * RATE_MAX).toFixed(1),
     year: createdYear.toString(),
     release: dayjs().set(`day`, getRandomNumber(DAYS)).set(`month`, getRandomNumber(MONTHES)).set(`year`, createdYear).format(`DD MMMM YYYY`),

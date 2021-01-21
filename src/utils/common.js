@@ -1,4 +1,4 @@
-import {ESC_KEYCODE, ENTER_KEYCODE} from "../consts";
+import {KeyCode} from "../consts";
 
 /**
  * Выполнение функции по нажатию на Escape.
@@ -6,7 +6,7 @@ import {ESC_KEYCODE, ENTER_KEYCODE} from "../consts";
  * @param {function} action - Действие при True.
  */
 const isEscEvent = (evt, action) => {
-  if (evt.keyCode === ESC_KEYCODE) {
+  if (evt.keyCode === KeyCode.ESC) {
     evt.preventDefault();
     action();
   }
@@ -18,10 +18,27 @@ const isEscEvent = (evt, action) => {
  * @param {function} action - Действие при True.
  */
 const isEnterEvent = (evt, action) => {
-  if (evt.keyCode === ENTER_KEYCODE) {
+  if (evt.keyCode === KeyCode.ENTER) {
     evt.preventDefault();
     action();
   }
+};
+
+const isCtrlEnterEvent = (action, ...codes) => {
+  let pressed = new Set();
+  document.addEventListener(`keydown`, function (evt) {
+    pressed.add(evt.code);
+    for (let code of codes) {
+      if (!pressed.has(code)) {
+        return;
+      }
+    }
+    pressed.clear();
+    action();
+  });
+  document.addEventListener(`keyup`, function (evt) {
+    pressed.delete(evt.code);
+  });
 };
 
 /**
@@ -70,4 +87,4 @@ const updateItem = (items, update) => {
   ];
 };
 
-export {isEscEvent, isEnterEvent, compareRate, compareComments, createElement, updateItem};
+export {isEscEvent, isEnterEvent, isCtrlEnterEvent, compareRate, compareComments, createElement, updateItem};

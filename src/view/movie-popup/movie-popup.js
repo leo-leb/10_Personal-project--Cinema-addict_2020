@@ -1,4 +1,5 @@
 import {createMoviePopup} from "./movie-popup.templalte";
+import {EmojiTypes} from "../../consts";
 import SmartView from "../smart";
 
 export default class MoviePopup extends SmartView {
@@ -7,6 +8,7 @@ export default class MoviePopup extends SmartView {
     this._movie = movie;
 
     this._popupCloseHandler = this._popupCloseHandler.bind(this);
+    this._commentDeleteHandler = this._commentDeleteHandler.bind(this);
 
     this._watchlistToggleHandler = this._watchlistToggleHandler.bind(this);
     this._watchedToggleHandler = this._watchedToggleHandler.bind(this);
@@ -25,6 +27,7 @@ export default class MoviePopup extends SmartView {
   restoreHandlers() {
     this._setInnerHandlers();
     this.setCloseButtonClickHandler(this._callback.popupClose);
+    this.setDeleteButtonClickHandler(this._callback.commentDelete);
   }
 
   _setInnerHandlers() {
@@ -78,7 +81,7 @@ export default class MoviePopup extends SmartView {
   _commentInputHandler(evt) {
     evt.preventDefault();
     this.updateData({
-      commentsLib: evt.target.value
+      commentCloud: evt.target.value
     }, true);
   }
 
@@ -87,24 +90,28 @@ export default class MoviePopup extends SmartView {
     const target = evt.target;
     const popupWindow = document.querySelector(`.film-details`);
     switch (target.parentElement.getAttribute(`for`)) {
-      case `emoji-smile`:
+      case EmojiTypes.SMILE.name:
         this.updateData({
-          emotionStorage: `smile`
+          emotionCloud: EmojiTypes.SMILE.text,
+          isEmotionClick: true
         }, false, popupWindow.scrollTop);
         break;
-      case `emoji-sleeping`:
+      case EmojiTypes.SLEEPING.name:
         this.updateData({
-          emotionStorage: `sleeping`
+          emotionCloud: EmojiTypes.SLEEPING.text,
+          isEmotionClick: true
         }, false, popupWindow.scrollTop);
         break;
-      case `emoji-puke`:
+      case EmojiTypes.PUKE.name:
         this.updateData({
-          emotionStorage: `puke`
+          emotionCloud: EmojiTypes.PUKE.text,
+          isEmotionClick: true
         }, false, popupWindow.scrollTop);
         break;
-      case `emoji-angry`:
+      case EmojiTypes.ANGRY.name:
         this.updateData({
-          emotionStorage: `angry`
+          emotionCloud: EmojiTypes.ANGRY.text,
+          isEmotionClick: true
         }, false, popupWindow.scrollTop);
         break;
       default:
@@ -112,8 +119,29 @@ export default class MoviePopup extends SmartView {
     }
   }
 
+  _commentDeleteHandler(evt) {
+    evt.preventDefault();
+    const popupWindowBefore = document.querySelector(`.film-details`);
+    let scrollPosition = popupWindowBefore.scrollTop;
+    const commentId = evt.target.parentElement.parentElement.parentElement.getAttribute(`data-id`);
+    this._callback.commentDelete(commentId);
+    this.updateElement();
+    const popupWindowAfter = document.querySelector(`.film-details`);
+    popupWindowAfter.scrollTop = scrollPosition;
+  }
+
   setCloseButtonClickHandler(callback) {
     this._callback.popupClose = callback;
     this.getElement().querySelector(`.film-details__close-btn`).addEventListener(`click`, this._popupCloseHandler);
+  }
+
+  setDeleteButtonClickHandler(callback) {
+    this._callback.commentDelete = callback;
+    const deleteButton = this.getElement().querySelectorAll(`.film-details__comment-delete`);
+    if (deleteButton) {
+      for (let i = 0; i < deleteButton.length; i++) {
+        deleteButton[i].addEventListener(`click`, this._commentDeleteHandler);
+      }
+    }
   }
 }
