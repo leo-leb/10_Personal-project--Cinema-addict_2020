@@ -6,12 +6,14 @@ export default class Smart extends AbstractView {
     this._movie = {};
   }
 
-  updateElement() {
-    this._callback.changeData(this._movie);
+  updateElement(actionType, updateType) {
+    console.log(actionType);
+    console.log(updateType);
+    this._callback.changeData(actionType, updateType, this._movie);
     this.restoreHandlers();
   }
 
-  updateData(update, justDataUpdating, scrollPosition) {
+  updateData(actionType, updateType, update, justDataUpdating, scrollPosition) {
     if (!update) {
       return;
     }
@@ -26,7 +28,7 @@ export default class Smart extends AbstractView {
       return;
     }
 
-    this.updateElement();
+    this.updateElement(actionType, updateType);
 
     const popupWindow = document.querySelector(`.film-details`);
     popupWindow.scrollTop = scrollPosition;

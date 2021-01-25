@@ -58,9 +58,9 @@ const compareRate = (a, b) => {
  * @return {result}
  */
 const compareComments = (a, b) => {
-  return b.comments - a.comments;
+  return b.comments.length - a.comments.length;
 };
-
+  
 /**
  * Сравнивает элементы массива фильмов по количеству комментариев.
  * @param {object} template - Текущий элемент массива.
@@ -72,19 +72,18 @@ const createElement = (template) => {
   return newElement.firstChild;
 };
 
-const updateItem = (items, update) => {
-  const index = items.findIndex((item) => item.id === update.id);
+// const updateItem = (items, update) => {
+//   const index = items.findIndex((item) => item.id === update.id);
 
-  if (index === -1) {
-    return items;
-  }
+//   if (index === -1) {
+//     return items;
+//   }
 
-  // респрет оператор
-  return [
-    ...items.slice(0, index),
-    update,
-    ...items.slice(index + 1)
-  ];
-};
+//   return [
+//     ...items.slice(0, index),
+//     update,
+//     ...items.slice(index + 1)
+//   ];
+// };
 
-export {isEscEvent, isEnterEvent, isCtrlEnterEvent, compareRate, compareComments, createElement, updateItem};
+export {isEscEvent, isEnterEvent, isCtrlEnterEvent, compareRate, compareComments, createElement};

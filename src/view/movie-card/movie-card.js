@@ -1,4 +1,5 @@
 import {createMovieCard} from "./movie-card.template";
+import {UserAction, UpdateType} from "../../consts";
 import SmartView from "../smart";
 
 export default class MovieCard extends SmartView {
@@ -54,21 +55,21 @@ export default class MovieCard extends SmartView {
 
   _watchlistToggleHandler(evt) {
     evt.preventDefault();
-    this.updateData({
+    this.updateData(UserAction.UPDATE_MOVIE, UpdateType.PATCH, {
       isWatchList: !this._movie.isWatchList
     });
   }
 
   _watchedToggleHandler(evt) {
     evt.preventDefault();
-    this.updateData({
+    this.updateData(UserAction.UPDATE_MOVIE, UpdateType.PATCH, {
       isWatched: !this._movie.isWatched
     });
   }
 
   _favoriteToggleHandler(evt) {
     evt.preventDefault();
-    this.updateData({
+    this.updateData(UserAction.UPDATE_MOVIE, UpdateType.PATCH, {
       isFavorite: !this._movie.isFavorite
     });
   }
@@ -77,4 +78,25 @@ export default class MovieCard extends SmartView {
     this._callback.popupOpen = callback;
     this.getElement().addEventListener(`click`, this._popupOpenHandler);
   }
+
+  // _watchlistToggleHandler(evt) {
+  //   evt.preventDefault();
+  //   this.updateData({
+  //     isWatchList: !this._movie.isWatchList
+  //   });
+  // }
+
+  // _watchedToggleHandler(evt) {
+  //   evt.preventDefault();
+  //   this.updateData({
+  //     isWatched: !this._movie.isWatched
+  //   });
+  // }
+
+  // _favoriteToggleHandler(evt) {
+  //   evt.preventDefault();
+  //   this.updateData({
+  //     isFavorite: !this._movie.isFavorite
+  //   });
+  // }
 }

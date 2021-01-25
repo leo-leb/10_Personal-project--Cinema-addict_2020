@@ -3,7 +3,7 @@ import MoviePopupView from "../view/movie-popup/movie-popup";
 import MoviesListPresenter from "./movies-list";
 import {isEscEvent} from "../utils/common";
 import {siteBody, movies} from "../main";
-import {Mode, KeyCode} from "../consts";
+import {Mode, KeyCode, UserAction, UpdateType} from "../consts";
 import {remove, render, replace, RenderPosition} from "../utils/render";
 
 let pressed = new Set();
@@ -128,4 +128,23 @@ export default class Movie {
     });
     this._movie.comments.splice(getIndexOfComment, 1);
   }
+
+  // _onPopupCtrlEnter(evt) {
+  //   const popupWindow = document.querySelector(`.film-details`);
+  //   pressed.add(evt.code);
+  //   for (let code of KeyCode.CTRL_ENTER) {
+  //     if (!pressed.has(code)) {
+  //       return;
+  //     }
+  //   }
+  //   pressed.clear();
+  //   this._moviePopupComponent.updateData({
+  //     isEmotionClick: false
+  //   }, false, popupWindow.scrollTop);
+  //   document.querySelector(`.film-details__add-emoji-label`).innerHTML = ``;
+  //   document.querySelector(`.film-details__comment-input`).innerHTML = ``;
+  //   document.addEventListener(`keyup`, () => {
+  //     pressed.delete(evt.code);
+  //   });
+  // }
 }
